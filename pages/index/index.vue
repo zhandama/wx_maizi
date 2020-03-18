@@ -179,6 +179,16 @@
 		onLoad() {
 			this.loadData();
 			this.wxGetUserInfo();
+			let params = {
+				url:this.$url + 'goodsInfo/selectByPage',
+				data:{
+					pageNum:1,
+					pageSize:10
+				}
+			}
+			this.$http(params).then(res=>{
+				console.log(res)
+			})
 		},
 		methods: {
 			/**
@@ -195,20 +205,6 @@
 				
 				let goodsList = await this.$api.json('goodsList');
 				this.goodsList = goodsList || [];
-				
-				uni.request({
-				    url: this.$url+'selectById?id=1', //仅为示例，并非真实接口地址。
-				    data: {
-				        text: 'uni.request'
-				    },
-				    header: {
-				        'custom-header': 'hello' //自定义请求头信息
-				    },
-				    success: (res) => {
-				        console.log(res.data);
-				        this.text = 'request success';
-				    }
-				});
 			},
 			wxGetUserInfo() {
 				uni.login({

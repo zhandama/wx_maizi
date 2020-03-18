@@ -27,16 +27,22 @@
 					}
 				});
 			}
-			wx.login({
+			uni.login({
 			  success (res) {
 			    if (res.code) {
 			      //发起网络请求
-			      wx.request({
-			        url: vm.$url + 'buyerInfo/login',
-			        data: {
-			          code: res.code
-			        }
-			      })
+				  uni.request({
+				    url: vm.$url + 'buyerInfo/login',
+				    data: {
+				      code: res.code
+				    },
+					success:function(res){
+						if(res && res.data) {
+							console.log(11111111,res)
+							wx.setStorage({key:'headerUserToken',data:res.data.result})
+						}
+					}
+				  })
 			    } else {
 			      console.log('登录失败！' + res.errMsg)
 			    }
