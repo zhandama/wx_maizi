@@ -8,6 +8,9 @@
 			<view class="topnav">设计<br>案例</view>
 			<view class="topnav">视觉<br>形象</view>
 		</view>
+		<button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
+			授权登录
+		</button>	
 		<view class="carousel-section">
 			<!-- 标题栏和状态栏占位符 -->
 			<view class="titleNview-placing"></view>
@@ -175,6 +178,7 @@
 
 		onLoad() {
 			this.loadData();
+			this.wxGetUserInfo();
 		},
 		methods: {
 			/**
@@ -191,6 +195,47 @@
 				
 				let goodsList = await this.$api.json('goodsList');
 				this.goodsList = goodsList || [];
+				
+				uni.request({
+				    url: this.$url+'selectById?id=1', //仅为示例，并非真实接口地址。
+				    data: {
+				        text: 'uni.request'
+				    },
+				    header: {
+				        'custom-header': 'hello' //自定义请求头信息
+				    },
+				    success: (res) => {
+				        console.log(res.data);
+				        this.text = 'request success';
+				    }
+				});
+			},
+			wxGetUserInfo() {
+				uni.login({
+				  provider: 'weixin',
+				  success: function (loginRes) {
+					console.log(loginRes);
+					// 获取用户信息
+					uni.getUserInfo({
+					  provider: 'weixin',
+					  success: function (infoRes) {
+						console.log('用户昵称为：',infoRes.userInfo);
+					  }
+					});
+				  }
+				});
+				uni.chooseAddress({
+				  success (res) {
+				    console.log(res)
+				  }
+				})
+			},
+			wxChooseAddress() {
+				uni.chooseAddress({
+				  success(res) {
+					console.log(res)
+				  }
+				})
 			},
 			swiperChange(e) {
 				const index = e.detail.current;

@@ -10,6 +10,13 @@
 			...mapMutations(['login'])
 		},
 		onLaunch: function() {
+			var vm = this 
+			uni.login({
+			  provider: 'weixin',
+			  success: function (loginRes) {
+			    console.log(loginRes.authResult);
+			  }
+			});
 			let userInfo = uni.getStorageSync('userInfo') || '';
 			if(userInfo.id){
 				//更新登陆状态
@@ -20,7 +27,21 @@
 					}
 				});
 			}
-			
+			wx.login({
+			  success (res) {
+			    if (res.code) {
+			      //发起网络请求
+			      wx.request({
+			        url: vm.$url + 'buyerInfo/login',
+			        data: {
+			          code: res.code
+			        }
+			      })
+			    } else {
+			      console.log('登录失败！' + res.errMsg)
+			    }
+			  }
+			})
 		},
 		onShow: function() {
 			console.log('App Show')
