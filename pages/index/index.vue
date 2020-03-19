@@ -178,17 +178,16 @@
 
 		onLoad() {
 			this.loadData();
-			this.wxGetUserInfo();
-			let params = {
-				url:this.$url + 'goodsInfo/selectByPage',
-				data:{
-					pageNum:1,
-					pageSize:10
-				}
-			}
-			this.$http(params).then(res=>{
-				console.log(res)
-			})
+			// let params = {
+			// 	url:this.$url + 'goodsInfo/selectByPage',
+			// 	data:{
+			// 		pageNum:1,
+			// 		pageSize:10
+			// 	}
+			// }
+			// this.$http(params).then(res=>{
+			// 	console.log(res)
+			// })
 		},
 		methods: {
 			/**
@@ -220,18 +219,11 @@
 					});
 				  }
 				});
-				uni.chooseAddress({
-				  success (res) {
-				    console.log(res)
-				  }
-				})
-			},
-			wxChooseAddress() {
-				uni.chooseAddress({
-				  success(res) {
-					console.log(res)
-				  }
-				})
+				// uni.chooseAddress({
+				//   success (res) {
+				//     console.log(res)
+				//   }
+				// })
 			},
 			swiperChange(e) {
 				const index = e.detail.current;

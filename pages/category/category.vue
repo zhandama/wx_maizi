@@ -36,6 +36,21 @@
 		},
 		methods: {
 			async loadData(){
+        // let params = {
+        // 	url:this.$url + 'category/selectAllEnableCatory',
+        //   type:'post'
+        // }
+        // let res = await this.$http(params)
+        // if (res.data.result) {
+        //   res.data.result.forEach(item=>{
+        //     this.flist.push(item);
+        //     if (item.categoryInfoList) {
+        //       item.categoryInfoList.forEach(itemSon=>{
+        //         this.slist.push(itemSon)
+        //       })
+        //     }
+        //   })
+        // }
 				let list = await this.$api.json('cateList');
 				list.forEach(item=>{
 					if(!item.pid){
