@@ -8,15 +8,16 @@
 			<view class="topnav">设计<br>案例</view>
 			<view class="topnav">视觉<br>形象</view>
 		</view>
-		<button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
+		<button class='bottom' type='primary' open-type="getPhoneNumber" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
 			授权登录
 		</button>	
+		<!-- <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"></button> -->
 		<view class="carousel-section">
 			<!-- 标题栏和状态栏占位符 -->
 			<view class="titleNview-placing"></view>
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({title: '轮播广告'})">
-					<image :src="item.src" />
+					<image :src="imgUrl+item.titleAttr" />
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -30,9 +31,9 @@
 			<image src="/static/images/hot_title.jpg" mode="widthFix"></image>
 		</view>
 		<view class="homeHot clearfix">
-			<view class="homeHot-list" :class="{'mg-r':(index+1)%3!=0}" v-for="(item, index) in hotList" :key="index">
+			<view class="homeHot-list" :class="{'mg-r':(index+1)%3!=0}" v-for="(item, index) in hotList" :key="index"  @click="navToDetailPage(item.goodsId)">
 				<view class="homeHot-img">
-					<image :src="item.image" mode="widthFix"></image>
+					<image :src="imgUrl+item.goodsAttr" mode="widthFix"></image>
 				</view>
 				<view class="homeHot-title">{{item.title}}<span><image class="more" src="/static/images/more1.jpg" mode="widthFix"></image></span></view>
 			</view>
@@ -167,6 +168,7 @@
 
 		data() {
 			return {
+				imgUrl:this.$imgUrl,
 				titleNViewBackground: '',
 				swiperCurrent: 0,
 				swiperLength: 0,
@@ -178,16 +180,6 @@
 
 		onLoad() {
 			this.loadData();
-			// let params = {
-			// 	url:this.$url + 'goodsInfo/selectByPage',
-			// 	data:{
-			// 		pageNum:1,
-			// 		pageSize:10
-			// 	}
-			// }
-			// this.$http(params).then(res=>{
-			// 	console.log(res)
-			// })
 		},
 		methods: {
 			/**
@@ -195,15 +187,42 @@
 			 * 分次请求未作整合
 			 */
 			async loadData() {
-				let carouselList = await this.$api.json('carouselList');
-				let hotList = await this.$api.json('homeHotList');
-				this.titleNViewBackground = carouselList[0].background;
-				this.swiperLength = carouselList.length;
-				this.carouselList = carouselList;
-				this.hotList = hotList;
+				this.getbanner()
+				this.gethotList()
 				
 				let goodsList = await this.$api.json('goodsList');
 				this.goodsList = goodsList || [];
+			},
+			getbanner() {
+				let params = {
+					data:{
+						pageNum:1,
+						pageSize:10,
+						newsType:1
+					},
+					url:this.$url + 'selectByPage'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						this.carouselList = res.data.result.list
+						this.swiperLength = this.carouselList.length
+					}
+				})
+			},
+			gethotList(){
+				let params = {
+					data:{
+						pageNum:1,
+						pageSize:6,
+						isHot:true
+					},
+					url:this.$url + 'goodsInfo/selectByPage'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						this.hotList = res.data.result.list
+					}
+				})
 			},
 			wxGetUserInfo() {
 				uni.login({
@@ -211,6 +230,11 @@
 				  success: function (loginRes) {
 					console.log(loginRes);
 					// 获取用户信息
+					uni.chooseInvoiceTitle({
+						success(res) {
+							console.log('dddddd：',res)
+						}
+					})
 					uni.getUserInfo({
 					  provider: 'weixin',
 					  success: function (infoRes) {
@@ -230,11 +254,9 @@
 				this.swiperCurrent = index;
 			},
 			//详情页
-			navToDetailPage(item) {
-				//测试数据没有写id，用title代替	
-				let id = item.title;
+			navToDetailPage(goodsId) {
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
+					url: `/pages/product/product?goodsId=${goodsId}`
 				})
 			},
 		},

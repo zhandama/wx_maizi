@@ -5,7 +5,7 @@
 				<swiper-item class="swiper-item" v-for="(item,index) in imgList" :key="index">
 					<view class="image-wrapper">
 						<image
-							:src="item.src" 
+							:src="imgUrl + item" 
 							class="loaded" 
 							mode="aspectFill"
 						></image>
@@ -15,17 +15,17 @@
 		</view>
 		
 		<view class="introduce-section">
-			<text class="title">恒源祥2019春季长袖白色t恤 新款春装</text>
+			<text class="title">{{detail.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">341.6</text>
-				<text class="m-price">¥488</text>
-				<text class="coupon-tip">7折</text>
+				<text class="price">{{detail.vipPrice}}</text>
+				<text class="m-price">¥{{detail.initPrice}}</text>
+				<!-- <text class="coupon-tip">7折</text> -->
 			</view>
 			<view class="bot-row">
-				<text>销量: 108</text>
-				<text>库存: 4690</text>
-				<text>浏览量: 768</text>
+				<text>销量: {{detail.saleCount}}</text>
+				<!-- <text>库存: 4690</text> -->
+				<text>热度: {{detail.hotCount}}</text>
 			</view>
 		</view>
 		
@@ -41,7 +41,6 @@
 				立即分享
 				<text class="yticon icon-you"></text>
 			</view>
-			
 		</view>
 		
 		<view class="c-list">
@@ -78,7 +77,7 @@
 		</view>
 		
 		<!-- 评价 -->
-		<view class="eva-section">
+<!-- 		<view class="eva-section">
 			<view class="e-header">
 				<text class="tit">评价</text>
 				<text>(86)</text>
@@ -96,13 +95,13 @@
 					</view>
 				</view>
 			</view>
-		</view>
+		</view> -->
 		
 		<view class="detail-desc">
 			<view class="d-header">
 				<text>图文详情</text>
 			</view>
-			<rich-text :nodes="desc"></rich-text>
+			<rich-text :nodes="detail.description"></rich-text>
 		</view>
 		
 		<!-- 底部操作菜单 -->
@@ -115,14 +114,14 @@
 				<text class="yticon icon-gouwuche"></text>
 				<text>购物车</text>
 			</navigator>
-			<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
+		<!-- 	<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
 				<text class="yticon icon-shoucang"></text>
 				<text>收藏</text>
-			</view>
+			</view> -->
 			
 			<view class="action-btn-group">
 				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
-				<button type="primary" class=" action-btn no-border add-cart-btn">加入购物车</button>
+				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addcart">加入购物车</button>
 			</view>
 		</view>
 		
@@ -184,22 +183,13 @@
 		},
 		data() {
 			return {
+				imgUrl:this.$imgUrl,
 				specClass: 'none',
 				specSelected:[],
-				
+				detail:{},
 				favorite: true,
 				shareList: [],
-				imgList: [
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
-					}
-				],
+				imgList: [],
 				desc: `
 					<div style="width:100%">
 						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i4/479184430/O1CN01nCpuLc1iaz4bcSN17_!!479184430.jpg_400x400.jpg" />
@@ -271,9 +261,10 @@
 		async onLoad(options){
 			
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
-			let id = options.id;
-			if(id){
-				this.$api.msg(`点击了${id}`);
+			let goodsId = options.goodsId;
+			if(goodsId){
+				this.$api.msg(`${goodsId}`);
+				this.getdetail(goodsId)
 			}
 			
 			
@@ -290,6 +281,32 @@
 			this.shareList = await this.$api.json('shareList');
 		},
 		methods:{
+			getdetail(goodsId){
+				let params = {
+					data:{
+						goodsId:goodsId,
+					},
+					url:this.$url + 'goodsInfo/selectByGoodsId'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						this.detail = res.data.result
+						this.imgList = this.detail.goodsImg.split(';')
+					}
+				})
+			},
+			addcart() {
+				let params = {
+					data:this.detail.goodsId,
+					url:this.$url + 'shoppingCart/addShoppingCart',
+					type:'post'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						this.$api.msg(`加入购物车成功`);
+					}
+				})
+			},
 			//规格弹窗开关
 			toggleSpec() {
 				if(this.specClass === 'show'){
@@ -830,7 +847,7 @@
 				display:flex;
 				align-items: center;
 				justify-content: center;
-				width: 180upx;
+				width: 210upx;
 				height: 100%;
 				font-size: $font-base ;
 				padding: 0;

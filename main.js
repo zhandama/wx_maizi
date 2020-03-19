@@ -46,6 +46,7 @@ Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
 Vue.prototype.$api = {msg, json, prePage};
 Vue.prototype.$http = Http;
+Vue.prototype.$imgUrl = 'http://27n5n57140.wicp.vip/backend-new/'
 Vue.prototype.$url = 'http://27n5n57140.wicp.vip/wx-restapi/api/'
 
 App.mpType = 'app'

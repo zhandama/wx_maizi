@@ -5,14 +5,62 @@
 				{{item.name}}
 			</view>
 		</scroll-view>
-		<scroll-view scroll-with-animation scroll-y class="right-aside" @scroll="asideScroll" :scroll-top="tabScrollTop">
-			<view v-for="item in slist" :key="item.id" class="s-list" :id="'main-'+item.id">
-				<text class="s-item">{{item.name}}</text>
-				<view class="t-list">
-					<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
-						<image :src="titem.picture"></image>
-						<text>{{titem.name}}</text>
-					</view>
+		<scroll-view scroll-with-animation scroll-y class="right-aside" :scroll-top="tabScrollTop">
+			<view class="t-list">
+				<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
+					<image :src="titem.picture"></image>
+					<text>{{titem.name}}</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view>
+				<view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
+				</view><view  class="t-item">
+					<image src="/static/images/img2.jpg"></image>
+					<text>123123123123</text>
 				</view>
 			</view>
 		</scroll-view>
@@ -26,9 +74,12 @@
 				sizeCalcState: false,
 				tabScrollTop: 0,
 				currentId: 1,
-				flist: [],
+				flist: [{name:'全部',id:'-1'}],
 				slist: [],
-				tlist: [],
+				params:{
+					pageNum:1,
+					pageSize:20
+				}
 			}
 		},
 		onLoad(){
@@ -36,69 +87,48 @@
 		},
 		methods: {
 			async loadData(){
-        // let params = {
-        // 	url:this.$url + 'category/selectAllEnableCatory',
-        //   type:'post'
-        // }
-        // let res = await this.$http(params)
-        // if (res.data.result) {
-        //   res.data.result.forEach(item=>{
-        //     this.flist.push(item);
-        //     if (item.categoryInfoList) {
-        //       item.categoryInfoList.forEach(itemSon=>{
-        //         this.slist.push(itemSon)
-        //       })
-        //     }
-        //   })
-        // }
-        // this.currentId = this.flist[0].id
+				let params = {
+					url:this.$url + 'category/selectAllEnableCatory',
+				  type:'post'
+				}
+				let res = await this.$http(params)
+				if (res.data.result) {
+				  res.data.result.forEach(item=>{
+					this.flist.push(item);
+					// if (item.categoryInfoList) {
+					//   item.categoryInfoList.forEach(itemSon=>{
+					// 	this.slist.push(itemSon)
+					//   })
+					// }
+				  })
+				}
+				this.currentId = this.flist[0].id
         
-				let list = await this.$api.json('cateList');
-				list.forEach(item=>{
-					if(!item.pid){
-						this.flist.push(item);  //pid为父级id, 没有pid或者pid=0是一级分类
-					}else if(!item.picture){
-						this.slist.push(item); //没有图的是2级分类
-					}else{
-						this.tlist.push(item); //3级分类
-					}
-				})
+				// let list = await this.$api.json('cateList');
+				// list.forEach(item=>{
+				// 	if(!item.pid){
+				// 		this.flist.push(item);  //pid为父级id, 没有pid或者pid=0是一级分类
+				// 	}else if(!item.picture){
+				// 		this.slist.push(item); //没有图的是2级分类
+				// 	}else{
+				// 		this.tlist.push(item); //3级分类
+				// 	}
+				// })
+			},
+			getgoodsList(){
+				
+			},
+			//下拉刷新
+			onPullDownRefresh(){
+				this.loadData('refresh');
+			},
+			//加载更多
+			onReachBottom(){
+				this.loadData();
 			},
 			//一级分类点击
 			tabtap(item){
-				if(!this.sizeCalcState){
-					this.calcSize();
-				}
-				
 				this.currentId = item.id;
-				let index = this.slist.findIndex(sitem=>sitem.pid === item.id);
-				this.tabScrollTop = this.slist[index].top;
-			},
-			//右侧栏滚动
-			asideScroll(e){
-				if(!this.sizeCalcState){
-					this.calcSize();
-				}
-				let scrollTop = e.detail.scrollTop;
-				let tabs = this.slist.filter(item=>item.top <= scrollTop).reverse();
-				if(tabs.length > 0){
-					this.currentId = tabs[0].pid;
-				}
-			},
-			//计算右侧栏每个tab的高度等信息
-			calcSize(){
-				let h = 0;
-				this.slist.forEach(item=>{
-					let view = uni.createSelectorQuery().select("#main-" + item.id);
-					view.fields({
-						size: true
-					}, data => {
-						item.top = h;
-						h += data.height;
-						item.bottom = h;
-					}).exec();
-				})
-				this.sizeCalcState = true;
 			},
 			navToList(sid, tid){
 				uni.navigateTo({
@@ -113,7 +143,7 @@
 	page,
 	.content {
 		height: 100%;
-		background-color: #f8f8f8;
+		background-color: #fff;
 	}
 
 	.content {
@@ -121,22 +151,22 @@
 	}
 	.left-aside {
 		flex-shrink: 0;
-		width: 200upx;
+		width: 150upx;
 		height: 100%;
-		background-color: #fff;
+		background-color: #f8f8f8;
 	}
 	.f-item {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 100%;
-		height: 100upx;
+		height: 85upx;
 		font-size: 28upx;
 		color: $font-color-base;
 		position: relative;
 		&.active{
 			color: $base-color;
-			background: #f8f8f8;
+			background: #fff;
 			&:before{
 				content: '';
 				position: absolute;
@@ -183,14 +213,14 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
-		width: 176upx;
+		width: 276upx;
 		font-size: 26upx;
 		color: #666;
 		padding-bottom: 20upx;
 		
 		image{
-			width: 140upx;
-			height: 140upx;
+			width: 240upx;
+			height: 240upx;
 		}
 	}
 </style>

@@ -119,8 +119,24 @@
 					item.checked = true;
 					return item;
 				});
+				console.log(this.hasLogin)
+				this.getlist()
 				this.cartList = cartList;
 				this.calcTotal();  //计算总价
+			},
+			getlist() {
+				let params = {
+					data:{
+						pageNum:1,
+						pageSize:10
+					},
+					url:this.$url + 'shoppingCart/selectByPage'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						console.log(res.data.result)
+					}
+				})
 			},
 			//监听image加载完成
 			onImageLoad(key, index) {
