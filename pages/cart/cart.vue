@@ -21,7 +21,7 @@
 						:class="{'b-b': index!==cartList.length-1}"
 					>
 						<view class="image-wrapper">
-							<image :src="item.image" 
+							<image :src="imgUrl + item.goodsAttr" 
 								:class="[item.loaded]"
 								mode="aspectFill" 
 								lazy-load 
@@ -37,13 +37,13 @@
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
 							<text class="attr">{{item.attr_val}}</text>
-							<text class="price">¥{{item.price}}</text>
+							<text class="price">¥{{item.vipPrice}}</text>
 							<uni-number-box 
 								class="step"
 								:min="1" 
-								:max="item.stock"
-								:value="item.number>item.stock?item.stock:item.number"
-								:isMax="item.number>=item.stock?true:false"
+								:max="99"
+								:value="item.count>99?99:item.count"
+								:isMax="item.number>=99?true:false"
 								:isMin="item.number===1"
 								:index="index"
 								@eventChange="numberChange"
@@ -90,6 +90,7 @@
 		},
 		data() {
 			return {
+        imgUrl:this.$imgUrl,
 				total: 0, //总价格
 				allChecked: false, //全选状态  true|false
 				empty: false, //空白页现实  true|false
@@ -99,6 +100,9 @@
 		onLoad(){
 			this.loadData();
 		},
+    onShow: function(){
+      this.getlist()
+    },
 		watch:{
 			//显示空白页
 			cartList(e){
@@ -114,17 +118,17 @@
 		methods: {
 			//请求数据
 			async loadData(){
-				let list = await this.$api.json('cartList'); 
-				let cartList = list.map(item=>{
-					item.checked = true;
-					return item;
-				});
-				console.log(this.hasLogin)
-				this.getlist()
-				this.cartList = cartList;
-				this.calcTotal();  //计算总价
+				// let list = await this.$api.json('cartList'); 
+				// let cartList = list.map(item=>{
+				// 	item.checked = true;
+				// 	return item;
+				// });
+				// console.log(this.hasLogin)
+				// this.cartList = cartList;
+				// this.calcTotal();  //计算总价
 			},
 			getlist() {
+        this.cartList = []
 				let params = {
 					data:{
 						pageNum:1,
@@ -135,6 +139,12 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						console.log(res.data.result)
+            let list = res.data.result
+            this.cartList = list.map(item=>{
+            	item.checked = true;
+            	return item;
+            });
+            this.calcTotal();
 					}
 				})
 			},
@@ -144,6 +154,7 @@
 			},
 			//监听image加载失败
 			onImageError(key, index) {
+        console.log(1111111111)
 				this[key][index].image = '/static/errorImage.jpg';
 			},
 			navToLogin(){
@@ -202,7 +213,7 @@
 				let checked = true;
 				list.forEach(item=>{
 					if(item.checked === true){
-						total += item.price * item.number;
+						total += item.vipPrice * item.count;
 					}else if(checked === true){
 						checked = false;
 					}
@@ -218,7 +229,7 @@
 					if(item.checked){
 						goodsData.push({
 							attr_val: item.attr_val,
-							number: item.number
+							number: item.count
 						})
 					}
 				})

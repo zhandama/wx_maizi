@@ -8,9 +8,9 @@
 			<view class="topnav">设计<br>案例</view>
 			<view class="topnav">视觉<br>形象</view>
 		</view>
-		<button class='bottom' type='primary' open-type="getPhoneNumber" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
+		<!-- <button class='bottom' type='primary' open-type="getPhoneNumber" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
 			授权登录
-		</button>	
+		</button>	 -->
 		<!-- <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"></button> -->
 		<view class="carousel-section">
 			<!-- 标题栏和状态栏占位符 -->
@@ -165,7 +165,6 @@
 <script>
 
 	export default {
-
 		data() {
 			return {
 				imgUrl:this.$imgUrl,
@@ -174,7 +173,8 @@
 				swiperLength: 0,
 				carouselList: [],
 				goodsList: [],
-				hotList:[]
+				hotList:[],
+        token:''
 			};
 		},
 
@@ -187,9 +187,8 @@
 			 * 分次请求未作整合
 			 */
 			async loadData() {
-				this.getbanner()
-				this.gethotList()
-				
+        this.getbanner()
+        this.gethotList()
 				let goodsList = await this.$api.json('goodsList');
 				this.goodsList = goodsList || [];
 			},
@@ -447,8 +446,19 @@
 		}
 		.homeHot-title {
 			padding:10upx;
+      height:50upx;
+      font-size:28upx;
+      width: 100%;
+      padding-right:50upx;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      overflow: hidden;
+      position: relative;
 			.more{
-				float: right;
+        position: absolute;
+        top:10upx;
+				right:5upx;
 				width: 40upx;
 				margin-right: 5upx;
 			}

@@ -11,22 +11,22 @@
 		},
 		onLaunch: function() {
 			var vm = this 
-			uni.login({
-			  provider: 'weixin',
-			  success: function (loginRes) {
-			    console.log(loginRes.authResult);
-			  }
-			});
-			let userInfo = uni.getStorageSync('userInfo') || '';
-			if(userInfo.id){
-				//更新登陆状态
-				uni.getStorage({
-					key: 'userInfo',
-					success: (res) => {
-						this.login(res.data);
-					}
-				});
-			}
+			// uni.login({
+			//   provider: 'weixin',
+			//   success: function (loginRes) {
+			//     console.log(loginRes.authResult);
+			//   }
+			// });
+			// let userInfo = uni.getStorageSync('userInfo') || '';
+			// if(userInfo.id){
+			// 	//更新登陆状态
+			// 	uni.getStorage({
+			// 		key: 'userInfo',
+			// 		success: (res) => {
+			// 			this.login(res.data);
+			// 		}
+			// 	});
+			// }
 			uni.login({
 			  success (res) {
 			    if (res.code) {
@@ -38,7 +38,6 @@
 				    },
 					success:function(res){
 						if(res && res.data) {
-							console.log(11111111,res)
 							wx.setStorage({key:'headerUserToken',data:res.data.result})
 						}
 					}

@@ -10,7 +10,6 @@ const store = new Vuex.Store({
 	},
 	mutations: {
 		login(state, provider) {
-
 			state.hasLogin = true;
 			state.userInfo = provider;
 			uni.setStorage({//缓存用户登陆状态
@@ -23,8 +22,8 @@ const store = new Vuex.Store({
 			state.hasLogin = false;
 			state.userInfo = {};
 			uni.removeStorage({  
-                key: 'userInfo'  
-            })
+          key: 'userInfo'  
+      })
 		}
 	},
 	actions: {
