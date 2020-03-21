@@ -5,62 +5,16 @@
 				{{item.name}}
 			</view>
 		</scroll-view>
-		<scroll-view scroll-with-animation scroll-y class="right-aside" :scroll-top="tabScrollTop">
+		<scroll-view scroll-with-animation scroll-y class="right-aside" @scrolltolower="loadmore()">
 			<view class="t-list">
 				<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
 					<image :src="titem.picture"></image>
 					<text>{{titem.name}}</text>
 				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view>
-				<view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
-				</view><view  class="t-item">
-					<image src="/static/images/img2.jpg"></image>
-					<text>123123123123</text>
+				<view @click="navToList()" class="t-item" v-for="titem in goodsList" :key="titem.id">
+					<image :src="imgUrl + titem.goodsAttr"></image>
+					<text class="goods-title">{{titem.title}}</text>
+					<text>￥{{titem.initPrice}}</text>
 				</view>
 			</view>
 		</scroll-view>
@@ -71,64 +25,93 @@
 	export default {
 		data() {
 			return {
-				sizeCalcState: false,
-				tabScrollTop: 0,
-				currentId: 1,
-				flist: [{name:'全部',id:'-1'}],
-				slist: [],
+				imgUrl:this.$imgUrl,
+				nomore: false,
+				currentId: '',
+				flist: [{name:'全部',id:'all'},{name:'热销',id:'isHot'}],
+				goodsList: [],
+				total: 0,
 				params:{
 					pageNum:1,
-					pageSize:20
+					pageSize:10
 				}
 			}
 		},
-		onLoad(){
+		onShow() {
+			if (this.currentId!=wx.getStorageSync('currentId')) {
+				this.currentId = wx.getStorageSync('currentId')
+				this.tabtap({id:this.currentId})
+			}
+		},
+		onLoad(options){
+			if(wx.getStorageSync('currentId')){
+				this.currentId = wx.getStorageSync('currentId')
+			}
 			this.loadData();
+			this.getgoodsList(this.currentId)
 		},
 		methods: {
 			async loadData(){
 				let params = {
 					url:this.$url + 'category/selectAllEnableCatory',
-				  type:'post'
-				}
+					type:'post'
+				} 
 				let res = await this.$http(params)
 				if (res.data.result) {
 				  res.data.result.forEach(item=>{
 					this.flist.push(item);
-					// if (item.categoryInfoList) {
-					//   item.categoryInfoList.forEach(itemSon=>{
-					// 	this.slist.push(itemSon)
-					//   })
-					// }
 				  })
 				}
-				this.currentId = this.flist[0].id
-        
-				// let list = await this.$api.json('cateList');
-				// list.forEach(item=>{
-				// 	if(!item.pid){
-				// 		this.flist.push(item);  //pid为父级id, 没有pid或者pid=0是一级分类
-				// 	}else if(!item.picture){
-				// 		this.slist.push(item); //没有图的是2级分类
-				// 	}else{
-				// 		this.tlist.push(item); //3级分类
-				// 	}
-				// })
+				if(!this.currentId){
+					this.currentId = this.flist[0].id
+				}
 			},
-			getgoodsList(){
+			getgoodsList(id){
+				console.log(id,111111)
+				if (id && id=='isHot'){
+					this.params.isHot = true
+					wx.setStorage({key:'currentId',data:'isHot'})
+					delete this.params.rootCategoryId
+				} else if(id && id!=='all') {
+					wx.setStorage({key:'currentId',data:''})
+					this.params.rootCategoryId=id
+					delete this.params.isHot
+				} else {
+					wx.setStorage({key:'currentId',data:'all'})
+					delete this.params.rootCategoryId
+					delete this.params.isHot
+				}
+				let params = {
+					data:this.params,
+					url:this.$url + 'goodsInfo/selectByPage',
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						let data = res.data.result
+						this.goodsList = this.goodsList.concat(data.list)
+						this.total = data.total
+					}
+				})
 				
 			},
-			//下拉刷新
-			onPullDownRefresh(){
-				this.loadData('refresh');
-			},
-			//加载更多
-			onReachBottom(){
-				this.loadData();
+			loadmore(){
+				if (this.nomore) {
+					return
+				}
+				if (this.goodsList.length<this.total) {
+					this.params.pageNum++
+					this.getgoodsList(this.currentId)
+				} else {
+					this.nomore = true
+				}
 			},
 			//一级分类点击
 			tabtap(item){
-				this.currentId = item.id;
+				this.currentId = item.id
+				this.params.pageNum = 1
+				this.goodsList = []
+				this.nomore = false
+				this.getgoodsList(item.id)
 			},
 			navToList(sid, tid){
 				uni.navigateTo({
@@ -217,7 +200,16 @@
 		font-size: 26upx;
 		color: #666;
 		padding-bottom: 20upx;
-		
+		.goods-title{
+			width: 90%;
+			font-size: 29upx;
+			padding:5upx 0 0 0 ;
+			text-align: center;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			word-break: break-all;
+			overflow: hidden;
+		}
 		image{
 			width: 240upx;
 			height: 240upx;

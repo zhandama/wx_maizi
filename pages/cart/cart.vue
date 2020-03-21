@@ -1,20 +1,16 @@
 <template>
 	<view class="container">
 		<!-- 空白页 -->
-		<view v-if="!hasLogin || empty===true" class="empty">
+		<view v-if="empty===true" class="empty">
 			<image src="/static/emptyCart.jpg" mode="aspectFit"></image>
-			<view v-if="hasLogin" class="empty-tips">
+			<view class="empty-tips">
 				空空如也
-				<navigator class="navigator" v-if="hasLogin" url="../index/index" open-type="switchTab">随便逛逛></navigator>
-			</view>
-			<view v-else class="empty-tips">
-				空空如也
-				<view class="navigator" @click="navToLogin">去登陆></view>
+				<navigator class="navigator" url="../index/index" open-type="switchTab">随便逛逛></navigator>
 			</view>
 		</view>
 		<view v-else>
 			<!-- 列表 -->
-			<view class="cart-list">
+			<view class="cart-list" v-if="cartList.length>0">
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view
 						class="cart-item" 
@@ -43,8 +39,8 @@
 								:min="1" 
 								:max="99"
 								:value="item.count>99?99:item.count"
-								:isMax="item.number>=99?true:false"
-								:isMin="item.number===1"
+								:isMax="item.count>=99?true:false"
+								:isMin="item.count===1"
 								:index="index"
 								@eventChange="numberChange"
 							></uni-number-box>
@@ -67,11 +63,11 @@
 				</view>
 				<view class="total-box">
 					<text class="price">¥{{total}}</text>
-					<text class="coupon">
+					<!-- <text class="coupon">
 						已优惠
 						<text>74.35</text>
 						元
-					</text>
+					</text> -->
 				</view>
 				<button type="primary" class="no-border confirm-btn" @click="createOrder">去结算</button>
 			</view>
@@ -80,9 +76,7 @@
 </template>
 
 <script>
-	import {
-		mapState
-	} from 'vuex';
+	import {mapState} from 'vuex';
 	import uniNumberBox from '@/components/uni-number-box.vue'
 	export default {
 		components: {
@@ -90,7 +84,7 @@
 		},
 		data() {
 			return {
-        imgUrl:this.$imgUrl,
+			imgUrl:this.$imgUrl,
 				total: 0, //总价格
 				allChecked: false, //全选状态  true|false
 				empty: false, //空白页现实  true|false
@@ -100,9 +94,12 @@
 		onLoad(){
 			this.loadData();
 		},
-    onShow: function(){
-      this.getlist()
-    },
+		onShow: function(){
+		  this.getlist()
+		},
+		onHide: function(){
+		  this.cartList = []
+		},
 		watch:{
 			//显示空白页
 			cartList(e){
@@ -118,35 +115,27 @@
 		methods: {
 			//请求数据
 			async loadData(){
-				// let list = await this.$api.json('cartList'); 
-				// let cartList = list.map(item=>{
-				// 	item.checked = true;
-				// 	return item;
-				// });
-				// console.log(this.hasLogin)
-				// this.cartList = cartList;
-				// this.calcTotal();  //计算总价
+				//deleteShoppingCart
 			},
-			getlist() {
-        this.cartList = []
+			async getlist() {
+				this.cartList = []
 				let params = {
 					data:{
 						pageNum:1,
-						pageSize:10
+						pageSize:20
 					},
 					url:this.$url + 'shoppingCart/selectByPage'
 				}
-				this.$http(params).then(res=>{
-					if (res.data.result) {
-						console.log(res.data.result)
-            let list = res.data.result
-            this.cartList = list.map(item=>{
-            	item.checked = true;
-            	return item;
-            });
-            this.calcTotal();
-					}
-				})
+				const res = await this.$http(params)
+				let list = res.data.result
+				if (list) {
+					this.cartList = list.map(item=>{
+						item.checked = true;
+						return item;
+					});
+				}
+				
+				this.calcTotal();
 			},
 			//监听image加载完成
 			onImageLoad(key, index) {
@@ -154,7 +143,6 @@
 			},
 			//监听image加载失败
 			onImageError(key, index) {
-        console.log(1111111111)
 				this[key][index].image = '/static/errorImage.jpg';
 			},
 			navToLogin(){
@@ -178,18 +166,27 @@
 			},
 			//数量
 			numberChange(data){
-				this.cartList[data.index].number = data.number;
+				console.log(data)
+				this.cartList[data.index].count = data.number;
 				this.calcTotal();
 			},
 			//删除
 			deleteCartItem(index){
-				let list = this.cartList;
-				let row = list[index];
-				let id = row.id;
-
+				let goodsId = this.cartList[index].goodsId;
 				this.cartList.splice(index, 1);
+				let goodsIdList = []
+				goodsIdList.push(goodsId)
+				this.deletedgoods(goodsIdList)
 				this.calcTotal();
 				uni.hideLoading();
+			},
+			deletedgoods(goodsIdList) {
+				let params = {
+					data:goodsIdList,
+					url:this.$url + 'shoppingCart/deleteShoppingCart',
+					type:'post'
+				}
+				this.$http(params)
 			},
 			//清空
 			clearCart(){
@@ -197,6 +194,11 @@
 					content: '清空购物车？',
 					success: (e)=>{
 						if(e.confirm){
+							let goodsIdList = []
+							this.cartList.map(x=>{
+								goodsIdList.push(x.goodsId)
+							})
+							this.deletedgoods(goodsIdList)
 							this.cartList = [];
 						}
 					}

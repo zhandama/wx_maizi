@@ -8,7 +8,7 @@ export default function(param){
     }
     return new Promise((resolve,reject) => {
         wx.request({
-            // header:header,
+            header:header,
             url: param.url,
             data: param.data,
             method: param.type,

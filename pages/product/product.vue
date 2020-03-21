@@ -14,13 +14,13 @@
 			</swiper>
 		</view>
 		
-		<view class="introduce-section">
+		<view class="introduce-section" v-if="detail">
 			<text class="title">{{detail.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">{{detail.vipPrice}}</text>
-				<text class="m-price">¥{{detail.initPrice}}</text>
-				<!-- <text class="coupon-tip">7折</text> -->
+				<text class="price">{{detail.initPrice}} </text>
+				<!-- <text class="m-price">¥{{detail.initPrice}}</text> -->
+				<text>元/件</text>
 			</view>
 			<view class="bot-row">
 				<text>销量: {{detail.saleCount}}</text>
@@ -30,7 +30,7 @@
 		</view>
 		
 		<!--  分享 -->
-		<view class="share-section" @click="share">
+		<!-- <view class="share-section" @click="share">
 			<view class="share-icon">
 				<text class="yticon icon-xingxing"></text>
 				 返
@@ -41,7 +41,7 @@
 				立即分享
 				<text class="yticon icon-you"></text>
 			</view>
-		</view>
+		</view> -->
 		
 		<view class="c-list">
 			<view class="c-row b-b" @click="toggleSpec">
@@ -53,12 +53,7 @@
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="c-row b-b">
-				<text class="tit">优惠券</text>
-				<text class="con t-r red">领取优惠券</text>
-				<text class="yticon icon-you"></text>
-			</view>
-			<view class="c-row b-b">
+		<!-- 	<view class="c-row b-b">
 				<text class="tit">促销活动</text>
 				<view class="con-list">
 					<text>新人首单送20元无门槛代金券</text>
@@ -66,36 +61,14 @@
 					<text>订单满100减30</text>
 					<text>单笔购买满两件免邮费</text>
 				</view>
-			</view>
-			<view class="c-row b-b">
-				<text class="tit">服务</text>
+			</view> -->
+			<view class="c-row b-b" v-for="(sItem, sIndex) in detail.goodsPropertyList" :key="sIndex">
+				<text class="tit">{{sItem.name}}</text>
 				<view class="bz-list con">
-					<text>7天无理由退换货 ·</text>
-					<text>假一赔十 ·</text>
+					<text>{{sItem.propertyValue}}</text>
 				</view>
 			</view>
 		</view>
-		
-		<!-- 评价 -->
-<!-- 		<view class="eva-section">
-			<view class="e-header">
-				<text class="tit">评价</text>
-				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
-				<text class="yticon icon-you"></text>
-			</view> 
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
-				<view class="right">
-					<text class="name">Leo yo</text>
-					<text class="con">商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢</text>
-					<view class="bot">
-						<text class="attr">购买类型：XL 红色</text>
-						<text class="time">2019-04-01 19:21</text>
-					</view>
-				</view>
-			</view>
-		</view> -->
 		
 		<view class="detail-desc">
 			<view class="d-header">
@@ -137,7 +110,7 @@
 			<view class="mask"></view>
 			<view class="layer attr-content" @click.stop="stopPrevent">
 				<view class="a-t">
-					<image src="https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg"></image>
+					<image :src="imgUrl + detail.goodsAttr"></image>
 					<view class="right">
 						<text class="price">¥328.00</text>
 						<text class="stock">库存：188件</text>
@@ -263,7 +236,6 @@
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			let goodsId = options.goodsId;
 			if(goodsId){
-				this.$api.msg(`${goodsId}`);
 				this.getdetail(goodsId)
 			}
 			
@@ -279,6 +251,16 @@
 				}
 			})
 			this.shareList = await this.$api.json('shareList');
+		},
+		onShareAppMessage(options) {
+			if (res.from === 'button') {// 来自页面内分享按钮
+			  console.log(res.target)
+			}
+			console.log(options)
+			return {
+			  title: '自定义分享标题',
+			  path: '/pages/product/product?goodsId=' + options.goodsId
+			}
 		},
 		methods:{
 			getdetail(goodsId){

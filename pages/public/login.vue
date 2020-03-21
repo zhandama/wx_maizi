@@ -9,7 +9,7 @@
 			<view class="welcome">
 				欢迎回来！
 			</view>
-			<view class="input-content">
+		<!-- 	<view class="input-content">
 				<view class="input-item">
 					<text class="tit">手机号码</text>
 					<input 
@@ -35,16 +35,19 @@
 						@confirm="toLogin"
 					/>
 				</view>
-			</view>
-			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
-			<view class="forget-section">
-				忘记密码?
+			</view> -->
+			<!-- <button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button> -->
+			<button class="confirm-btn" :disabled="logining" style="background: #fa436a;" type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo" >
+				登录
+			</button>
+			<view class="forget-section" @click="navBack">
+				暂不登录
 			</view>
 		</view>
-		<view class="register-section">
+		<!-- <view class="register-section">
 			还没有账号?
 			<text @click="toRegist">马上注册</text>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -76,30 +79,20 @@
 			toRegist(){
 				this.$api.msg('去注册');
 			},
-			async toLogin(){
+			wxGetUserInfo(){
+				let vm = this
 				this.logining = true;
-				const {mobile, password} = this;
-				/* 数据验证模块
-				if(!this.$api.match({
-					mobile,
-					password
-				})){
-					this.logining = false;
-					return;
-				}
-				*/
-				const sendData = {
-					mobile,
-					password
-				};
-				const result = await this.$api.json('userInfo');
-				if(result.status === 1){
-					this.login(result.data);
-                    uni.navigateBack();  
-				}else{
-					this.$api.msg(result.msg);
-					this.logining = false;
-				}
+				uni.getUserInfo({
+				  provider: 'weixin',
+				  success: function (infoRes) {
+					  vm.login(infoRes.userInfo);
+					  uni.navigateBack();  
+				  },
+				  fail:function(e){
+					  vm.$api.msg('登陆失败');
+					  vm.logining = false;
+				  }
+				});
 			}
 		},
 

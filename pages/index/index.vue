@@ -8,9 +8,11 @@
 			<view class="topnav">设计<br>案例</view>
 			<view class="topnav">视觉<br>形象</view>
 		</view>
-		<!-- <button class='bottom' type='primary' open-type="getPhoneNumber" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
+<!-- 		<button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
 			授权登录
-		</button>	 -->
+		</button>	
+		<button open-type="getPhoneNumber"  @getphonenumber="wxGetPhoneNumber" ></button> -->
+		
 		<!-- <button open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber"></button> -->
 		<view class="carousel-section">
 			<!-- 标题栏和状态栏占位符 -->
@@ -38,16 +40,17 @@
 				<view class="homeHot-title">{{item.title}}<span><image class="more" src="/static/images/more1.jpg" mode="widthFix"></image></span></view>
 			</view>
 		</view>
-		<view class="title2">
+		<view class="title2" @click="navToList('isHot')">
 			<image src="/static/images/more2.jpg" mode="widthFix"></image>
 		</view>
 		<view class="home-pel">
 			<image src="/static/images/hone_man.jpg" mode="widthFix"></image>
 		</view>
-		<view class="homePo">
+		
+		<view class="homePo" v-for="item in flist" :key="item.id" @click="navToList(item.id)">
 			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
+				<view class="cn">{{item.name}}</view>
+				<view class="en">{{item.remark}}</view>
 			</view>
 			<view class="cont">
 				<image src="/static/images/home1.jpg" mode="widthFix"></image>
@@ -58,107 +61,12 @@
 			</view>
 		</view>
 		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
-		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
-		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
 		
 		<view class="home-pel">
 			<image src="/static/images/hone_woman.jpg" mode="widthFix"></image>
 		</view>
 		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
 		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
-		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
-		
-		<view class="homePo">
-			<view class="title3">
-				<view class="cn">客厅茶具</view>
-				<view class="en">A living room</view>
-			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
-			</view>
-		</view>
 	</view>
 </template>
 
@@ -174,10 +82,10 @@
 				carouselList: [],
 				goodsList: [],
 				hotList:[],
-        token:''
+				flist:[]
 			};
 		},
-
+		
 		onLoad() {
 			this.loadData();
 		},
@@ -187,10 +95,19 @@
 			 * 分次请求未作整合
 			 */
 			async loadData() {
-        this.getbanner()
-        this.gethotList()
+				this.getbanner()
+				this.gethotList()
 				let goodsList = await this.$api.json('goodsList');
 				this.goodsList = goodsList || [];
+				
+				let params = {
+					url:this.$url + 'category/selectAllEnableCatory',
+					type:'post'
+				} 
+				let res = await this.$http(params)
+				if (res.data.result) {
+				  this.flist = res.data.result
+				}
 			},
 			getbanner() {
 				let params = {
@@ -199,7 +116,7 @@
 						pageSize:10,
 						newsType:1
 					},
-					url:this.$url + 'selectByPage'
+					url:this.$url + 'content/selectByPage'
 				}
 				this.$http(params).then(res=>{
 					if (res.data.result) {
@@ -207,6 +124,9 @@
 						this.swiperLength = this.carouselList.length
 					}
 				})
+			},
+			wxGetPhoneNumber(e) {
+				console.log(e)
 			},
 			gethotList(){
 				let params = {
@@ -224,29 +144,13 @@
 				})
 			},
 			wxGetUserInfo() {
-				uni.login({
+				console.log(111)
+				uni.getUserInfo({
 				  provider: 'weixin',
-				  success: function (loginRes) {
-					console.log(loginRes);
-					// 获取用户信息
-					uni.chooseInvoiceTitle({
-						success(res) {
-							console.log('dddddd：',res)
-						}
-					})
-					uni.getUserInfo({
-					  provider: 'weixin',
-					  success: function (infoRes) {
-						console.log('用户昵称为：',infoRes.userInfo);
-					  }
-					});
+				  success: function (infoRes) {
+					console.log('用户昵称为：',infoRes);
 				  }
 				});
-				// uni.chooseAddress({
-				//   success (res) {
-				//     console.log(res)
-				//   }
-				// })
 			},
 			swiperChange(e) {
 				const index = e.detail.current;
@@ -258,6 +162,12 @@
 					url: `/pages/product/product?goodsId=${goodsId}`
 				})
 			},
+			navToList(id) {
+				wx.setStorage({key:'currentId',data:id})
+				uni.switchTab({
+					url: `/pages/category/category?id=${id}`
+				})
+			}
 		},
 		// #ifndef MP
 		// 标题栏input搜索框点击
