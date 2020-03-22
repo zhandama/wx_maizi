@@ -3,8 +3,8 @@
 		<view class="row b-b">
 			<text class="tit">选择身份</text>
 			<view class="row b-b">
-				<text class="ti-btn" :class="{'actived':params.auditState==2}" @click="params.auditState=2">设计师</text>
-				<text class="ti-btn" :class="{'actived':params.auditState==3}" @click="params.auditState=3">业务员</text>
+				<text class="ti-btn" :class="{'actived':params.auditState==3}" @click="params.auditState=3">设计师</text>
+				<text class="ti-btn" :class="{'actived':params.auditState==2}" @click="params.auditState=2">业务员</text>
 			</view>
 		</view>
 		<!-- <view class="row b-b">

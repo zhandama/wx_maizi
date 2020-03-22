@@ -57,7 +57,7 @@
 			</view>
 			<!-- 浏览历史 -->
 			<view class="history-section icon">
-				<list-cell icon="icon-xingxing" iconColor="#e07472" title="普通用户" tips="申请成为设计师或者业务员" @eventClick="navTo('/pages/user/userleave')"></list-cell>
+				<list-cell icon="icon-xingxing" iconColor="#e07472" title="普通用户" :nomore="tipsnomore" :tips="tips" @eventClick="navToUserLeave()"></list-cell>
 				<!-- <list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell> -->
 				<list-cell icon="icon-tuijian" iconColor="#9789f7" title="邀请好友拿积分" :nomore="false" :tips="'我的邀请码：'+basicInfo.popuCode"></list-cell>
 				<list-cell icon="icon-tuandui" iconColor="#ee883b" title="绑定邀请关系" @eventClick="navTo('/pages/user/popuCode')"></list-cell>
@@ -83,7 +83,9 @@
 				coverTransform: 'translateY(0px)',
 				coverTransition: '0s',
 				moving: false,
-				basicInfo:''
+				basicInfo:'',
+				tips:'申请成为设计师或者业务员',
+				tipsnomore:false,
 			}
 		},
 		onLoad(){
@@ -131,7 +133,14 @@
 				uni.navigateTo({  
 					url
 				})  
-			}, 
+			},
+			navToUserLeave() {
+				if (this.basicInfo.state==1||this.basicInfo.state==5) {
+					uni.navigateTo({
+						url:'/pages/user/userleave'
+					})  
+				}
+			},
 			getUserInfo(){
 				let params = {
 					url:this.$url + 'buyerInfo/queryBasicInfo'
@@ -139,6 +148,15 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						this.basicInfo = res.data.result
+						if (this.basicInfo.state==2||this.basicInfo.state==3) {
+							this.tips = '申请资料审核中...'
+						}
+						if (this.basicInfo.state==1||this.basicInfo.state==5) {
+							if (this.basicInfo.state==5) {
+								this.tips = '资料审核不通过请重新申请'
+							}
+							this.tipsnomore = true
+						}
 						this.login(this.basicInfo)
 					}
 				})
