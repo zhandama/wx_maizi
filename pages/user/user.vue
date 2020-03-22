@@ -18,7 +18,7 @@
 				</view> -->
 				<view class="tit">
 					<text class="yticon icon-iLinkapp-"></text>
-					积分：<span>20</span>
+					积分：<span>{{basicInfo.score}}</span>
 				</view>
 				<text class="e-m">积分可以用作购买商品抵扣金额</text>
 				<text class="e-b">邀请新用户注册且购买商品之后可以奖励积分</text>
@@ -57,24 +57,13 @@
 			</view>
 			<!-- 浏览历史 -->
 			<view class="history-section icon">
-				<!-- <view class="sec-header">
-					<text class="yticon icon-lishijilu"></text>
-					<text>浏览历史</text>
-				</view>
-				<scroll-view scroll-x class="h-list">
-					<image @click="navTo('/pages/product/product')" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553105186633&di=c121a29beece4e14269948d990f9e720&imgtype=0&src=http%3A%2F%2Fimg004.hc360.cn%2Fm8%2FM04%2FDE%2FDE%2FwKhQplZ-QteEBvsbAAAAADUkobU751.jpg" mode="aspectFill"></image>
-					<image @click="navTo('/pages/product/product')" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553105231218&di=09534b9833b5243296630e6d5b728eff&imgtype=0&src=http%3A%2F%2Fimg002.hc360.cn%2Fm1%2FM05%2FD1%2FAC%2FwKhQcFQ3iN2EQTo8AAAAAHQU6_8355.jpg" mode="aspectFill"></image>
-					<image @click="navTo('/pages/product/product')" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553105320890&di=c743386be51f2c4c0fd4b75754d14f3c&imgtype=0&src=http%3A%2F%2Fimg007.hc360.cn%2Fhb%2FMTQ1OTg4ODY0MDA3Ny05OTQ4ODY1NDQ%3D.jpg" mode="aspectFill"></image>
-					<image @click="navTo('/pages/product/product')" src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2691146630,2165926318&fm=26&gp=0.jpg" mode="aspectFill"></image>
-					<image @click="navTo('/pages/product/product')" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553105443324&di=8141bf13f3f208c61524d67f9bb83942&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01ac9a5548d29b0000019ae98e6d98.jpg" mode="aspectFill"></image>
-					<image @click="navTo('/pages/product/product')" src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=191678693,2701202375&fm=26&gp=0.jpg" mode="aspectFill"></image>
-				</scroll-view> -->
-				<!-- <list-cell icon="icon-iconfontweixin" iconColor="#e07472" title="我的钱包" tips="您的会员还有3天过期"></list-cell> -->
-				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell>
-				<list-cell icon="icon-share" iconColor="#9789f7" title="分享" tips="邀请好友赢积分"></list-cell>
+				<list-cell icon="icon-xingxing" iconColor="#e07472" title="普通用户" tips="申请成为设计师或者业务员" @eventClick="navTo('/pages/user/userleave')"></list-cell>
+				<!-- <list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell> -->
+				<list-cell icon="icon-tuijian" iconColor="#9789f7" title="邀请好友拿积分" :nomore="false" :tips="'我的邀请码：'+basicInfo.popuCode"></list-cell>
+				<list-cell icon="icon-tuandui" iconColor="#ee883b" title="绑定邀请关系" @eventClick="navTo('/pages/user/popuCode')"></list-cell>
 				<!-- <list-cell icon="icon-pinglun-copy" iconColor="#ee883b" title="晒单" tips="晒单抢红包"></list-cell> -->
 				<!-- <list-cell icon="icon-shoucang_xuanzhongzhuangtai" iconColor="#54b4ef" title="我的收藏"></list-cell> -->
-				<list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" border="" @eventClick="navTo('/pages/set/set')"></list-cell>
+				<!-- <list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" border="" @eventClick="navTo('/pages/set/set')"></list-cell> -->
 			</view>
 		</view>
 			
@@ -83,9 +72,7 @@
 </template>  
 <script>  
 	import listCell from '@/components/mix-list-cell';
-    import {  
-        mapState 
-    } from 'vuex';  
+    import { mapState, mapMutations } from 'vuex';  
 	let startY = 0, moveY = 0, pageAtTop = true;
     export default {
 		components: {
@@ -96,9 +83,17 @@
 				coverTransform: 'translateY(0px)',
 				coverTransition: '0s',
 				moving: false,
+				basicInfo:''
 			}
 		},
 		onLoad(){
+			// this.getUserInfo();
+		},
+		onShow() {
+			// if(!this.hasLogin){
+			// 	this.getUserInfo();
+			// }
+			this.getUserInfo();
 		},
 		// #ifndef MP
 		onNavigationBarButtonTap(e) {
@@ -124,7 +119,7 @@
 			...mapState(['hasLogin','userInfo'])
 		},
         methods: {
-
+			...mapMutations(['login']),
 			/**
 			 * 统一跳转接口,拦截未登录路由
 			 * navigator标签现在默认没有转场动画，所以用view
@@ -137,7 +132,17 @@
 					url
 				})  
 			}, 
-	
+			getUserInfo(){
+				let params = {
+					url:this.$url + 'buyerInfo/queryBasicInfo'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						this.basicInfo = res.data.result
+						this.login(this.basicInfo)
+					}
+				})
+			},
 			/**
 			 *  会员卡下拉和回弹
 			 *  1.关闭bounce避免ios端下拉冲突
@@ -193,7 +198,9 @@
 	  background: #fff;
 	  border-radius: 10upx;
 	}
-
+	page{
+		background: #f5f5f5;
+	}
 	.user-section{
 		height: 520upx;
 		padding: 100upx 30upx 0;
@@ -325,7 +332,6 @@
 		}
 	}
 	.history-section{
-		padding: 30upx 0 0;
 		margin-top: 20upx;
 		background: #fff;
 		border-radius:10upx;

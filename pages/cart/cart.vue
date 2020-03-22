@@ -230,6 +230,7 @@
 				list.forEach(item=>{
 					if(item.checked){
 						goodsData.push({
+							goodsId:item.goodsId,
 							attr_val: item.attr_val,
 							number: item.count
 						})
@@ -241,7 +242,10 @@
 						goodsData: goodsData
 					})}`
 				})
-				this.$api.msg('跳转下一页 sendData');
+				console.log(goodsData)
+				// this.$api.msg(JSON.stringify({
+				// 		goodsData: goodsData
+				// 	}));
 			}
 		}
 	}

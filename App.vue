@@ -10,6 +10,7 @@
 			...mapMutations(['login'])
 		},
 		onLaunch: function() {
+			wx.setStorage({key:'currentId',data:''})
 			var vm = this 
 			// uni.login({
 			//   provider: 'weixin',

@@ -7,11 +7,7 @@
 		</scroll-view>
 		<scroll-view scroll-with-animation scroll-y class="right-aside" @scrolltolower="loadmore()">
 			<view class="t-list">
-				<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
-					<image :src="titem.picture"></image>
-					<text>{{titem.name}}</text>
-				</view>
-				<view @click="navToList()" class="t-item" v-for="titem in goodsList" :key="titem.id">
+				<view @click="navToDetailPage(titem.goodsId)" class="t-item" v-for="titem in goodsList" :key="titem.id">
 					<image :src="imgUrl + titem.goodsAttr"></image>
 					<text class="goods-title">{{titem.title}}</text>
 					<text>￥{{titem.initPrice}}</text>
@@ -67,7 +63,6 @@
 				}
 			},
 			getgoodsList(id){
-				console.log(id,111111)
 				if (id && id=='isHot'){
 					this.params.isHot = true
 					wx.setStorage({key:'currentId',data:'isHot'})
@@ -92,7 +87,6 @@
 						this.total = data.total
 					}
 				})
-				
 			},
 			loadmore(){
 				if (this.nomore) {
@@ -113,11 +107,17 @@
 				this.nomore = false
 				this.getgoodsList(item.id)
 			},
-			navToList(sid, tid){
+			//详情页
+			navToDetailPage(goodsId) {
 				uni.navigateTo({
-					url: `/pages/product/list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
+					url: `/pages/product/product?goodsId=${goodsId}`
 				})
-			}
+			},
+			// navToList(sid, tid){
+			// 	uni.navigateTo({
+			// 		url: `/pages/product/list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
+			// 	})
+			// }
 		}
 	}
 </script>

@@ -7,7 +7,7 @@
 		<view class="wrapper">
 			<view class="left-top-sign">LOGIN</view>
 			<view class="welcome">
-				欢迎回来！
+				点击登录账户！
 			</view>
 		<!-- 	<view class="input-content">
 				<view class="input-item">
@@ -40,7 +40,7 @@
 			<button class="confirm-btn" :disabled="logining" style="background: #fa436a;" type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo" >
 				登录
 			</button>
-			<view class="forget-section" @click="navBack">
+			<view class="forget-section" @click="navToindex()">
 				暂不登录
 			</view>
 		</view>
@@ -52,10 +52,7 @@
 </template>
 
 <script>
-	import {  
-        mapMutations  
-    } from 'vuex';
-	
+	import {  mapMutations  } from 'vuex';
 	export default{
 		data(){
 			return {
@@ -79,12 +76,30 @@
 			toRegist(){
 				this.$api.msg('去注册');
 			},
+			saveInfo(userInfo) {
+				let params = {
+					data:userInfo,
+					url:this.$url + 'buyerInfo/saveBuyerBasicInfo',
+					type:'post'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						console.log(res.data.result)
+					}
+				})
+			},
+			navToindex(){
+				uni.switchTab({
+					url: `/pages/index/index`
+				})
+			},
 			wxGetUserInfo(){
 				let vm = this
 				this.logining = true;
 				uni.getUserInfo({
 				  provider: 'weixin',
 				  success: function (infoRes) {
+					  vm.saveInfo(infoRes.userInfo)
 					  vm.login(infoRes.userInfo);
 					  uni.navigateBack();  
 				  },

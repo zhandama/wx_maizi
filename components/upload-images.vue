@@ -64,17 +64,18 @@ export default {
 				title: '请稍后..',
 				mask: true,
 			})
-			try{
-				const uploadUrl = await this.uploadImage(images[0]);
-			}catch(err){
-				console.log(err);
-				return;
-			}
+			// try{
+			// 	const uploadUrl = await this.uploadImage(images[0]);
+			// }catch(err){
+			// 	console.log(err);
+			// 	return;
+			// }
+			let uploadUrl = await this.uploadImage(images[0]);
 			
 			if(uploadUrl !== false){
 				images.splice(0, 1);
 				this.imageList[this.imageList.length - 1].src = uploadUrl;
-
+				console.log(images,images.length,this.rduLength);
 				//判断是否需要继续上传
 				if(images.length > 0 && this.rduLength > 0){
 					this.uploadFiles(images);
@@ -100,14 +101,18 @@ export default {
 					thumb_mode: 1,  
 				};
 				this.uploadTask = uni.uploadFile({
+					header:{
+						headerUserToken:wx.getStorageSync('headerUserToken')
+					},
 					url: this.url, 
 					filePath: file,
-					name: 'file',
+					name: 'editormd-image-file',
 					formData: formData,
 					success(uploadFileResult){
 						const uploadFileRes = JSON.parse(uploadFileResult.data) || {};
-						if(uploadFileRes.status === 1 && uploadFileRes.data){
-							resolve(uploadFileRes.data);
+						if(uploadFileRes.success && uploadFileRes.result){
+							console.log(uploadFileRes.result)
+							resolve(uploadFileRes.result);
 						}else{
 							reject('接口返回错误');
 						}
@@ -201,6 +206,7 @@ export default {
 		height: 150upx;
 		z-index: 99;
 		border-radius:8upx;
+		margin-bottom: 30rpx;
 		background:#f9f9f9;
 		&:before,
 		&:after {
