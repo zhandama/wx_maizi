@@ -2,9 +2,9 @@
 	<view class="container">
 		<!-- 头部轮播 -->
 		<view class="topmain clearfix">
-			<view class="topnav">公司<br>文化</view>
+			<view class="topnav" @click="navToNews()">公司<br>文化</view>
 			<view class="topnav">旗下<br>品牌</view>
-			<view class="topnav">全国<br>门店</view>
+			<!-- <view class="topnav">全国<br>门店</view> -->
 			<view class="topnav">设计<br>案例</view>
 			<view class="topnav">视觉<br>形象</view>
 		</view>
@@ -43,30 +43,27 @@
 		<view class="title2" @click="navToList('isHot')">
 			<image src="/static/images/more2.jpg" mode="widthFix"></image>
 		</view>
-		<view class="home-pel">
+		<view class="home-pel"  @click="navToList('all')">
 			<image src="/static/images/hone_man.jpg" mode="widthFix"></image>
 		</view>
 		
-		<view class="homePo" v-for="item in flist" :key="item.id" @click="navToList(item.id)">
-			<view class="title3">
-				<view class="cn">{{item.name}}</view>
-				<view class="en">{{item.remark}}</view>
+		<view v-for="(item,index) in flist" :key="item.id">
+			<view class="homePo" @click="navToList(item.id)">
+				<view class="title3">
+					<view class="cn">{{item.name}}</view>
+					<view class="en">{{item.remark}}</view>
+				</view>
+				<view class="cont">
+					<image :src="imgUrl+itemUrl" mode="widthFix" v-for="(itemUrl, sunIndex) in item.imgUrl" :key="sunIndex"></image>
+				</view>
+				<view class="title2">
+					<image src="/static/images/more2.jpg" mode="widthFix"></image>
+				</view>
 			</view>
-			<view class="cont">
-				<image src="/static/images/home1.jpg" mode="widthFix"></image>
-				<image class="nomargin" src="/static/images/home2.jpg" mode="widthFix"></image>
-			</view>
-			<view class="title2">
-				<image src="/static/images/more2.jpg" mode="widthFix"></image>
+			<view class="home-pel" v-if="index==2" @click="navToList('all')">
+				<image src="/static/images/hone_woman.jpg" mode="widthFix"></image>
 			</view>
 		</view>
-		
-		
-		<view class="home-pel">
-			<image src="/static/images/hone_woman.jpg" mode="widthFix"></image>
-		</view>
-		
-		
 	</view>
 </template>
 
@@ -107,7 +104,17 @@
 				let res = await this.$http(params)
 				if (res.data.result) {
 				  this.flist = res.data.result
+				  if(this.flist.length>0) {
+					  this.flist.map(x=>{
+						  x.imgUrl = x.imageUrl.split(";")
+					  })
+				  }
 				}
+			},
+			navToNews(type) {
+				uni.navigateTo({
+					url: '/pages/notice/notice'
+				})
 			},
 			getbanner() {
 				let params = {
@@ -234,9 +241,9 @@
 	}
 	.topmain {
 		background: #fff;
-		padding-bottom:20upx;
+		padding:0 30upx 20upx 30upx;
 		.topnav {
-			float:left;width:20%;text-align: center;line-height: 40upx;
+			float:left;width:25%;text-align: center;line-height: 40upx;
 		}
 	}
 	/* 头部 轮播图 */
@@ -330,7 +337,7 @@
 	}
 	.title3{
 		width: 100%;
-		height: 110upx;
+		height: 95upx;
 		background: #fff;
 		text-align: center;
 		padding-top:15upx;
@@ -350,24 +357,29 @@
 		overflow: hidden;
 		background:#fff;
 		.homeHot-img{
+			height:240upx;
+			line-height:240upx;
+			overflow: hidden;
 			image{
 				width:100%;
+				height:240upx;
+				vertical-align: middle;
 			}
 		}
 		.homeHot-title {
 			padding:10upx;
-      height:50upx;
-      font-size:28upx;
-      width: 100%;
-      padding-right:50upx;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      word-break: break-all;
-      overflow: hidden;
-      position: relative;
+			  height:50upx;
+			  font-size:28upx;
+			  width: 100%;
+			  padding-right:50upx;
+			  white-space: nowrap;
+			  text-overflow: ellipsis;
+			  word-break: break-all;
+			  overflow: hidden;
+			  position: relative;
 			.more{
-        position: absolute;
-        top:10upx;
+				position: absolute;
+				top:10upx;
 				right:5upx;
 				width: 40upx;
 				margin-right: 5upx;
@@ -375,7 +387,7 @@
 		}
 	}
 	.home-pel {
-		margin-top:40upx;
+		margin:30upx 0;
 		padding:50upx 20upx;
 		overflow: hidden;
 		background:#fff;
@@ -384,14 +396,14 @@
 		}
 	}
 	.homePo{
-		margin-bottom:40upx;
+		margin-bottom:30upx;
 		.cont{
 			padding:0 30upx;
 			background:#fff;
 			image{
 				width:100%;
 				border-radius: 10upx;
-				margin-bottom:20upx
+				margin-top:20upx
 			}
 		}
 	}
