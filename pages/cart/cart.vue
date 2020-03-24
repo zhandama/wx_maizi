@@ -32,7 +32,7 @@
 						</view>
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
-							<text class="attr">{{item.attr_val}}</text>
+							<text class="attr"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem}}</text></text>
 							<text class="price">¥{{item.vipPrice}}</text>
 							<uni-number-box 
 								class="step"
@@ -131,6 +131,7 @@
 				if (list) {
 					this.cartList = list.map(item=>{
 						item.checked = true;
+						item.property = item.propertyInfo.split(';')
 						return item;
 					});
 				}
@@ -172,17 +173,17 @@
 			},
 			//删除
 			deleteCartItem(index){
-				let goodsId = this.cartList[index].goodsId;
+				let cartId = this.cartList[index].cartId;
 				this.cartList.splice(index, 1);
-				let goodsIdList = []
-				goodsIdList.push(goodsId)
-				this.deletedgoods(goodsIdList)
+				let cartIdList = []
+				cartIdList.push(cartId)
+				this.deletedgoods(cartIdList)
 				this.calcTotal();
 				uni.hideLoading();
 			},
-			deletedgoods(goodsIdList) {
+			deletedgoods(cartIdList) {
 				let params = {
-					data:goodsIdList,
+					data:cartIdList,
 					url:this.$url + 'shoppingCart/deleteShoppingCart',
 					type:'post'
 				}
@@ -226,26 +227,24 @@
 			//创建订单
 			createOrder(){
 				let list = this.cartList;
-				let goodsData = [];
+				
+				let orderList = []
 				list.forEach(item=>{
-					if(item.checked){
-						goodsData.push({
-							goodsId:item.goodsId,
-							attr_val: item.attr_val,
-							number: item.count
-						})
+					let order = {
+					    count: 1,
+					    goodsId: item.goodsId,
+						title:item.title,
+					    initPrice: item.initPrice,
+						goodsAttr:item.goodsAttr,
+						property:item.property,
 					}
+					orderList.push(order)
 				})
-
+				
+				wx.setStorage({key:'orderList',data:orderList})
 				uni.navigateTo({
-					url: `/pages/order/createOrder?data=${JSON.stringify({
-						goodsData: goodsData
-					})}`
+					url: `/pages/order/createOrder?shoppingCart=true`
 				})
-				console.log(goodsData)
-				// this.$api.msg(JSON.stringify({
-				// 		goodsData: goodsData
-				// 	}));
 			}
 		}
 	}
@@ -421,4 +420,5 @@
 	.cart-item .checkbox.checked{
 		color: $uni-color-primary;
 	}
+	.attr-property{padding-right:15upx}
 </style>

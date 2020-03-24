@@ -4,12 +4,15 @@
 		<view class="address-section">
 			<view class="order-content" @click="getAddress()">
 				<text class="yticon icon-shouhuodizhi"></text>
-				<view class="cen">
+				<view class="cen" v-if="address">
 					<view class="top">
-						<text class="name">{{addressData.name}}</text>
-						<text class="mobile">{{addressData.mobile}}</text>
+						<text class="name">{{addressData.realName}}</text>
+						<text class="mobile">{{addressData.phone}}</text>
 					</view>
-					<text class="address">{{addressData.address}} {{addressData.area}}</text>
+					<text class="address">{{addressData.completeAddress}}</text>
+				</view>
+				<view class="cen" v-else>
+					请选择地址
 				</view>
 				<text class="yticon icon-you"></text>
 			</view>
@@ -18,30 +21,17 @@
 		</view>
 
 		<view class="goods-section">
-			<view class="g-header b-b">
-				<image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
-				<text class="name">西城小店铺</text>
+			<view class="g-header">
 			</view>
 			<!-- 商品列表 -->
-			<view class="g-item">
-				<image src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=756705744,3505936868&fm=11&gp=0.jpg"></image>
+			<view class="g-item" v-for="(item,index) in orderList" :key="index">
+				<image :src="imgUrl+item.goodsAttr"></image>
 				<view class="right">
-					<text class="title clamp">古黛妃 短袖t恤女夏装2019新款</text>
-					<text class="spec">春装款 L</text>
+					<text class="title clamp">{{item.title}}</text>
+					<text class="spec"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem.name}}:{{sitem.propertyValue}}</text></text>
 					<view class="price-box">
-						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
-					</view>
-				</view>
-			</view>
-			<view class="g-item">
-				<image src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1620020012,789258862&fm=26&gp=0.jpg"></image>
-				<view class="right">
-					<text class="title clamp">韩版于是洞洞拖鞋 夏季浴室防滑简约居家【新人专享，限选意见】</text>
-					<text class="spec">春装款 L</text>
-					<view class="price-box">
-						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
+						<text class="price">￥{{item.initPrice}}</text>
+						<text class="number">x {{item.count}}</text>
 					</view>
 				</view>
 			</view>
@@ -127,9 +117,12 @@
 	export default {
 		data() {
 			return {
+				imgUrl:this.$imgUrl,
 				maskState: 0, //优惠券面板显示状态
 				desc: '', //备注
 				payType: 1, //1微信 2支付宝
+				shoppingCart:false,
+				orderList:[],
 				couponList: [
 					{
 						title: '新用户专享优惠券',
@@ -144,20 +137,21 @@
 						price: 15,
 					}
 				],
+				address:false,
 				addressData: {
-					name: '许小星',
-					mobile: '13853989563',
-					addressName: '金九大道',
-					address: '山东省济南市历城区',
-					area: '149号',
-					default: false,
+					realName: '',
+					phone: '',
+					completeAddress: ''
 				}
 			}
 		},
 		onLoad(option){
 			//商品数据
 			//let data = JSON.parse(option.data);
-			//console.log(data);
+			if (option.shoppingCart) {
+				this.shoppingCart = option.shoppingCart
+			}
+			this.orderList = wx.getStorageSync('orderList')
 		},
 		methods: {
 			//显示优惠券面板
@@ -170,17 +164,14 @@
 				}, timer)
 			},
 			getAddress(){
+				let vm = this 
 				wx.chooseAddress({
 					success(res) {
+						vm.address = true
+						vm.addressData.realName = res.userName
+						vm.addressData.phone = res.telNumber
+						vm.addressData.completeAddress = res.provinceName+res.cityName+res.countyName+res.detailInfo
 						console.log(res)
-					  console.log(res.userName)
-					  console.log(res.postalCode)
-					  console.log(res.provinceName)
-					  console.log(res.cityName)
-					  console.log(res.countyName)
-					  console.log(res.detailInfo)
-					  console.log(res.nationalCode)
-					  console.log(res.telNumber)
 					}
 			  })
 			},
@@ -191,9 +182,42 @@
 				this.payType = type;
 			},
 			submit(){
-				uni.redirectTo({
-					url: '/pages/money/pay'
+				if (!this.address) {
+					this.$api.msg('请选择收货地址')
+					return
+				}
+				let data = []
+				this.orderList.map(x=>{
+					let orderPropertyRequestList = []
+					x.property.map(n=>{
+						orderPropertyRequestList.push({fieldName:n.fieldName,propertyValue:n.propertyValue})
+					})
+					let obj = {
+						count:x.count,
+						goodsId:x.goodsId,
+						initPrice:x.initPrice,
+						orderPropertyRequestList
+					}
+					data.push(obj)
 				})
+				let list = [] 
+				let params = {
+					data:{
+						addOrderAddressRequest:this.addressData,
+						addSubOrderRequestList:data,
+						shoppingCart:this.shoppingCart
+					},
+					url:this.$url + 'orderInfo/addOrder',
+					type:'post'
+				}
+				this.$http(params).then(res=>{
+					if (res.data.result) {
+						console.log(res.data.result)
+					}
+				})
+				// uni.redirectTo({
+				// 	url: '/pages/money/pay'
+				// })
 			},
 			stopPrevent(){}
 		}
@@ -267,10 +291,7 @@
 		padding-bottom: 1px;
 
 		.g-header {
-			display: flex;
-			align-items: center;
-			height: 84upx;
-			padding: 0 30upx;
+			height: 1upx;
 			position: relative;
 		}
 
@@ -290,7 +311,7 @@
 		.g-item {
 			display: flex;
 			margin: 20upx 30upx;
-
+			border-bottom: 1px solid #f1f1f1;
 			image {
 				flex-shrink: 0;
 				display: block;
@@ -611,5 +632,5 @@
 			}
 		}
 	}
-
+	.attr-property{padding-right:15upx}
 </style>
