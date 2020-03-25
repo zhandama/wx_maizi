@@ -33,7 +33,7 @@
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
 							<text class="attr"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem}}</text></text>
-							<text class="price">¥{{item.vipPrice}}</text>
+							<text class="price">¥{{item.initPrice}}</text>
 							<uni-number-box 
 								class="step"
 								:min="1" 
@@ -131,7 +131,7 @@
 				if (list) {
 					this.cartList = list.map(item=>{
 						item.checked = true;
-						item.property = item.propertyInfo.split(';')
+						item.property = item.propertyInfo?item.propertyInfo.split(';'):''
 						return item;
 					});
 				}
@@ -216,7 +216,7 @@
 				let checked = true;
 				list.forEach(item=>{
 					if(item.checked === true){
-						total += item.vipPrice * item.count;
+						total += item.initPrice * item.count;
 					}else if(checked === true){
 						checked = false;
 					}
@@ -227,24 +227,31 @@
 			//创建订单
 			createOrder(){
 				let list = this.cartList;
-				
 				let orderList = []
 				list.forEach(item=>{
 					let order = {
-					    count: 1,
+					    count: item.count,
 					    goodsId: item.goodsId,
 						title:item.title,
 					    initPrice: item.initPrice,
 						goodsAttr:item.goodsAttr,
 						property:item.property,
+						propertyNameValueInfo:item.propertyNameValueInfo
 					}
 					orderList.push(order)
 				})
 				
 				wx.setStorage({key:'orderList',data:orderList})
-				uni.navigateTo({
-					url: `/pages/order/createOrder?shoppingCart=true`
-				})
+				if(!this.hasLogin){
+					uni.navigateTo({
+						url: `/pages/public/login`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/order/createOrder?shoppingCart=true`
+					})
+				}
+				
 			}
 		}
 	}

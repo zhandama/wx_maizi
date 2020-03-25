@@ -101,7 +101,16 @@
 				  success: function (infoRes) {
 					  vm.saveInfo(infoRes.userInfo)
 					  vm.login(infoRes.userInfo);
-					  uni.navigateBack();  
+					  let params = {
+					  	url:vm.$url + 'buyerInfo/queryBasicInfo'
+					  }
+					  vm.$http(params).then(res=>{
+					  	if (res.data.result) {
+					  		vm.login(res.data.result)
+							uni.navigateBack();
+					  	}
+					  })
+					    
 				  },
 				  fail:function(e){
 					  vm.$api.msg('登陆失败');

@@ -25,9 +25,7 @@
 					return;
 				}
 				let params = {
-					data:{
-						popuCode:this.popuCode
-					},
+					data:this.popuCode,
 					url:this.$url + 'buyerInfo/popu',
 					type:'post'
 				}

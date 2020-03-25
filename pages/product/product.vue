@@ -145,6 +145,7 @@
 
 <script>
 	import share from '@/components/share';
+	import { mapState } from 'vuex';  
 	export default{
 		components: {
 			share
@@ -191,6 +192,9 @@
 			  path: '/pages/product/product?goodsId=' + options.goodsId
 			}
 		},
+		computed: {
+			...mapState(['hasLogin','userInfo'])
+		},
 		methods:{
 			getdetail(goodsId){
 				let params = {
@@ -236,6 +240,8 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						this.$api.msg(`加入购物车成功`);
+					} else {
+						this.$api.msg(`添加购物车失败`);
 					}
 				})
 			},
@@ -289,9 +295,16 @@
 				// 	orderList.push(order)
 				// }
 				wx.setStorage({key:'orderList',data:orderList})
-				uni.navigateTo({
-					url: `/pages/order/createOrder`
-				})
+				if(!this.hasLogin){
+					uni.navigateTo({
+						url: `/pages/public/login`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/order/createOrder`
+					})
+				}
+				
 			},
 			stopPrevent(){}
 		},

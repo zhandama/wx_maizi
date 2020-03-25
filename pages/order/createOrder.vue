@@ -38,7 +38,7 @@
 		</view>
 
 		<!-- 优惠明细 -->
-		<view class="yt-list">
+	<!-- 	<view class="yt-list">
 			<view class="yt-list-cell b-b" @click="toggleMask('show')">
 				<view class="cell-icon">
 					券
@@ -53,28 +53,28 @@
 				<view class="cell-icon hb">
 					减
 				</view>
-				<text class="cell-tit clamp">商家促销</text>
+				<text class="cell-tit clamp">积分</text>
 				<text class="cell-tip disabled">暂无可用优惠</text>
 			</view>
-		</view>
+		</view> -->
 		<!-- 金额明细 -->
 		<view class="yt-list">
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">商品金额</text>
-				<text class="cell-tip">￥179.88</text>
+				<text class="cell-tip">￥{{totalPrice}}</text>
 			</view>
-			<view class="yt-list-cell b-b">
-				<text class="cell-tit clamp">优惠金额</text>
-				<text class="cell-tip red">-￥35</text>
+			<view class="yt-list-cell b-b" v-if="userInfo.score!=0">
+				<text class="cell-tit clamp">积分抵现</text>
+				<text class="cell-tip red">-￥{{userInfo.score}}</text>
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
 				<text class="cell-tip">免运费</text>
 			</view>
-			<view class="yt-list-cell desc-cell">
+			<!-- <view class="yt-list-cell desc-cell">
 				<text class="cell-tit clamp">备注</text>
 				<input class="desc" type="text" v-model="desc" placeholder="请填写备注信息" placeholder-class="placeholder" />
-			</view>
+			</view> -->
 		</view>
 		
 		<!-- 底部 -->
@@ -114,6 +114,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex'; 
 	export default {
 		data() {
 			return {
@@ -123,6 +124,7 @@
 				payType: 1, //1微信 2支付宝
 				shoppingCart:false,
 				orderList:[],
+				totalPrice:0,
 				couponList: [
 					{
 						title: '新用户专享优惠券',
@@ -148,10 +150,23 @@
 		onLoad(option){
 			//商品数据
 			//let data = JSON.parse(option.data);
+			if(!this.hasLogin){
+				uni.navigateTo({
+					url: `/pages/public/login`
+				})
+			}
 			if (option.shoppingCart) {
 				this.shoppingCart = option.shoppingCart
 			}
 			this.orderList = wx.getStorageSync('orderList')
+			if (this.orderList.length>0) {
+				this.orderList.map(x=>{
+					this.totalPrice += x.initPrice*x.count
+				})
+			}
+		},
+		computed: {
+			...mapState(['hasLogin','userInfo'])
 		},
 		methods: {
 			//显示优惠券面板
@@ -211,8 +226,17 @@
 					type:'post'
 				}
 				this.$http(params).then(res=>{
-					if (res.data.result) {
+					if (res.data.success && res.data.result) {
 						console.log(res.data.result)
+						let orderId = res.data.result
+						let sParams = {
+							data:orderId,
+							url:this.$url + 'payment/wx/payOrder',
+							type:'post'
+						}
+						this.$http(sParams).then(res=>{
+							console.log(res)
+						})
 					}
 				})
 				// uni.redirectTo({

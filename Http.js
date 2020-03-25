@@ -14,6 +14,7 @@ export default function(param){
             method: param.type,
             dataType: 'json',
             success: res => {
+				// 需要增加token失效补偿机制
                 resolve(res)
             },
             fail: res => {
