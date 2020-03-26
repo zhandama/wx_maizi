@@ -2,11 +2,11 @@
 	<view class="container">
 		<!-- 头部轮播 -->
 		<view class="topmain clearfix">
-			<view class="topnav" @click="navToNews()">公司<br>文化</view>
+			<view class="topnav" @click="navTo()">公司<br>文化</view>
 			<view class="topnav">旗下<br>品牌</view>
 			<!-- <view class="topnav">全国<br>门店</view> -->
-			<view class="topnav">设计<br>案例</view>
-			<view class="topnav">视觉<br>形象</view>
+			<view class="topnav" @click="navTo('/pages/about/caseList')">设计<br>案例</view>
+			<view class="topnav" @click="navTo('/pages/about/artsList')">视觉<br>形象</view>
 		</view>
 <!-- 		<button class='bottom' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">
 			授权登录
@@ -113,7 +113,7 @@
 			},
 			navToNews(type) {
 				uni.navigateTo({
-					url: '/pages/notice/notice'
+					url: '/pages/about/caseList'
 				})
 			},
 			getbanner() {
@@ -174,7 +174,12 @@
 				uni.switchTab({
 					url: `/pages/category/category?id=${id}`
 				})
-			}
+			},
+			navTo(url){
+				uni.navigateTo({  
+					url
+				})  
+			},
 		},
 		// #ifndef MP
 		// 标题栏input搜索框点击
