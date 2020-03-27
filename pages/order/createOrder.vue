@@ -82,7 +82,7 @@
 			<view class="price-content">
 				<text>实付款</text>
 				<text class="price-tip">￥</text>
-				<text class="price">475</text>
+				<text class="price">{{totalPrice}}</text>
 			</view>
 			<text class="submit" @click="submit">提交订单</text>
 		</view>
@@ -144,7 +144,8 @@
 					realName: '',
 					phone: '',
 					completeAddress: ''
-				}
+				},
+				paying:false
 			}
 		},
 		onLoad(option){
@@ -197,6 +198,9 @@
 				this.payType = type;
 			},
 			submit(){
+				if (this.paying) {
+					return
+				}
 				if (!this.address) {
 					this.$api.msg('请选择收货地址')
 					return
@@ -225,6 +229,8 @@
 					url:this.$url + 'orderInfo/addOrder',
 					type:'post'
 				}
+				this.paying = true
+				let vm = this
 				this.$http(params).then(res=>{
 					if (res.data.success && res.data.result) {
 						let orderId = res.data.result
@@ -239,7 +245,6 @@
 							if(data.data.result) {
 								payData = JSON.parse(data.data.result)
 							}
-							// console.log(payData,payData.timeStamp,payData.nonceStr,payData.packages,payData.signType,payData.paySign)
 							wx.requestPayment({
 							  timeStamp: payData.timeStamp,
 							  nonceStr: payData.nonceStr,
@@ -247,13 +252,22 @@
 							  signType: payData.signType,
 							  paySign: payData.paySign,
 							  success (res) { 
-								  console.log('success',res)
+								  uni.navigateTo({
+								  	url: `/pages/order/order`
+								  })
+								  vm.paying = false
 							  },
 							  fail (res) { 
 								  console.log('fail',res)
+								  uni.navigateTo({
+								  	url: `/pages/order/order?state=0`
+								  })
+								  vm.paying = false
 							  }
 							})
 						})
+					} else {
+						vm.paying = false
 					}
 				})
 				// uni.redirectTo({

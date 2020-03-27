@@ -145,7 +145,13 @@
 			"style": {
 				"navigationBarTitleText": "设计案例"
 			}
-		}, {
+		},{
+			"path": "pages/about/caseDetail",
+			"style": {
+				"navigationBarTitleText": "设计案例"
+			}
+		},
+		{
 			"path": "pages/category/category",
 			"style": {
 				"navigationBarTitleText": "分类",
