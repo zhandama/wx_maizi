@@ -227,15 +227,32 @@
 				}
 				this.$http(params).then(res=>{
 					if (res.data.success && res.data.result) {
-						console.log(res.data.result)
 						let orderId = res.data.result
 						let sParams = {
 							data:orderId,
 							url:this.$url + 'payment/wx/payOrder',
 							type:'post'
 						}
-						this.$http(sParams).then(res=>{
-							console.log(res)
+						this.$http(sParams).then(data=>{
+							console.log(data.data.result)
+							let payData = ''
+							if(data.data.result) {
+								payData = JSON.parse(data.data.result)
+							}
+							// console.log(payData,payData.timeStamp,payData.nonceStr,payData.packages,payData.signType,payData.paySign)
+							wx.requestPayment({
+							  timeStamp: payData.timeStamp,
+							  nonceStr: payData.nonceStr,
+							  package: payData.packages,
+							  signType: payData.signType,
+							  paySign: payData.paySign,
+							  success (res) { 
+								  console.log('success',res)
+							  },
+							  fail (res) { 
+								  console.log('fail',res)
+							  }
+							})
 						})
 					}
 				})
