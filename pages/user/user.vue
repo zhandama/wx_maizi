@@ -18,7 +18,7 @@
 				</view> -->
 				<view class="tit">
 					<text class="yticon icon-iLinkapp-"></text>
-					积分：<span>{{basicInfo.score}}</span>
+					积分：<span>{{basicInfo.score || 0}}</span>
 				</view>
 				<text class="e-m">积分可以用作购买商品抵扣金额</text>
 				<text class="e-b">邀请新用户注册且购买商品之后可以奖励积分</text>
@@ -56,7 +56,7 @@
 				</view>
 			</view>
 			<!-- 浏览历史 -->
-			<view class="history-section icon">
+			<view class="history-section icon" v-if="basicInfo">
 				<list-cell icon="icon-xingxing" iconColor="#e07472" :title="stateUser" :nomore="tipsnomore" :tips="tips" @eventClick="navToUserLeave()"></list-cell>
 				<!-- <list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell> -->
 				<list-cell icon="icon-tuijian" iconColor="#9789f7" title="邀请好友拿积分" :nomore="false" :tips="'我的邀请码：'+basicInfo.popuCode"></list-cell>

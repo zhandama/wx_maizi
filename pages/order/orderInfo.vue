@@ -68,10 +68,17 @@
 				<text class="cell-tit clamp">订单号</text>
 				<text class="cell-tip">{{orderInfo.orderId}}</text>
 			</view>
+					<view class="yt-list-cell b-b" v-if="orderInfo.sendCode">
+						<text class="cell-tit clamp">快递单号</text>
+						<text class="cell-tip">{{orderInfo.sendCode}}</text>
+					</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">下单时间</text>
 				<text class="cell-tip">{{orderInfo.createTime}}</text>
 			</view>
+		<!-- 	<view  v-if="orderInfo.sendCode">
+				<web-view src="https://m.so.com/index.php?q=75337564645716" />
+			</view> -->
 			<!-- <view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
 				<text class="cell-tip">免运费</text>
@@ -188,7 +195,7 @@
 				}
 				this.$http(params).then(res=>{
 					if(res.data.result) {
-						this.$api.msg(`确认收获成功`);
+						this.$api.msg(`确认收货成功`);
 					} else {
 						this.$api.msg(res.data.message);
 					}

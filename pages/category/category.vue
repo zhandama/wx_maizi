@@ -27,6 +27,7 @@
 				flist: [{name:'全部',id:'all'},{name:'热销',id:'isHot'}],
 				goodsList: [],
 				total: 0,
+				loading:false,
 				params:{
 					pageNum:1,
 					pageSize:10
@@ -38,6 +39,7 @@
 				this.currentId = wx.getStorageSync('currentId')
 				this.tabtap({id:this.currentId})
 			}
+			console.log(2)
 		},
 		onLoad(options){
 			if(wx.getStorageSync('currentId')){
@@ -63,6 +65,10 @@
 				}
 			},
 			getgoodsList(id){
+				if (this.loading){
+					return
+				}
+				this.loading = true
 				if (id && id=='isHot'){
 					this.params.isHot = true
 					wx.setStorage({key:'currentId',data:'isHot'})
@@ -83,6 +89,7 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						let data = res.data.result
+						this.loading = false
 						this.goodsList = this.goodsList.concat(data.list)
 						this.total = data.total
 					}
@@ -94,7 +101,7 @@
 				}
 				if (this.goodsList.length<this.total) {
 					this.params.pageNum++
-					this.getgoodsList(this.currentId)
+					this.getgoodsList(this.currentId);
 				} else {
 					this.nomore = true
 				}

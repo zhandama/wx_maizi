@@ -120,7 +120,6 @@
 				],
 			};
 		},
-		
 		onLoad(options){
 			/**
 			 * 修复app端点击除全部订单外的按钮进入时不加载数据的问题
@@ -232,9 +231,10 @@
 				}
 				this.$http(params).then(res=>{
 					if(res.data.result) {
-						this.$api.msg(`确认收获成功`);
+						this.$api.msg(`确认收货成功`);
+						console.log(location.href)
 					} else {
-						this.$api.msg(res.data.message);
+						this.$api.msg(res.data.message)
 					}
 				})
 			},
@@ -289,12 +289,16 @@
 					case 2:
 						stateTip = '待发货'; break;
 					case 3:
-						stateTip = '待收获'; break;
+						stateTip = '待收货'; break;
+					case 4:
+						stateTip = '已收货'; break;
 					case 5:
 						stateTip = '已完成'; 
 						stateTipColor = '#909399';
 						break;
-						
+					case 6:
+						stateTip = '已取消'; break;
+						stateTipColor = '#909399';
 					//更多自定义
 				}
 				return {stateTip, stateTipColor};
