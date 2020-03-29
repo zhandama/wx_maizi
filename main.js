@@ -2,7 +2,6 @@ import Vue from 'vue'
 import store from './store'
 import App from './App'
 import Http from './Http'
-import Json from './Json' //测试用数据
 /**
  *  因工具函数属于公司资产, 所以直接在Vue实例挂载几个常用的函数
  *  所有测试用数据均存放于根目录json.js
@@ -22,14 +21,14 @@ const msg = (title, duration=1500, mask=false, icon='none')=>{
 		icon
 	});
 }
-const json = type=>{
-	//模拟异步请求数据
-	return new Promise(resolve=>{
-		setTimeout(()=>{
-			resolve(Json[type]);
-		}, 500)
-	})
-}
+// const json = type=>{
+// 	//模拟异步请求数据
+// 	return new Promise(resolve=>{
+// 		setTimeout(()=>{
+// 			resolve(Json[type]);
+// 		}, 500)
+// 	})
+// }
 
 const prePage = ()=>{
 	let pages = getCurrentPages();
@@ -44,7 +43,7 @@ const prePage = ()=>{
 Vue.config.productionTip = false
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
-Vue.prototype.$api = {msg, json, prePage};
+Vue.prototype.$api = {msg, prePage};
 Vue.prototype.$http = Http;
 Vue.prototype.$imgUrl = 'http://27n5n57140.wicp.vip/backend-new/'
 Vue.prototype.$url = 'http://27n5n57140.wicp.vip/wx-restapi/api/'

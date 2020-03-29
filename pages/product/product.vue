@@ -89,8 +89,8 @@
 			</navigator>
 			
 			<view class="action-btn-group">
-				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
 				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addcart">加入购物车</button>
+				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
 			</view>
 		</view>
 		
@@ -108,7 +108,7 @@
 				<view class="a-t">
 					<image  v-if="detail && detail.goodsAttr" :src="imgUrl + detail.goodsAttr"></image>
 					<view class="right">
-						<text class="price">¥328.00</text>
+						<text class="price">¥{{detail.initPrice}} </text>
 						<!-- <text class="stock">库存：188件</text> -->
 						<view class="selected">
 							已选：
@@ -134,28 +134,17 @@
 				<button class="btn" @click="toggleSpec">完成</button>
 			</view>
 		</view>
-		<!-- 分享 -->
-		<share 
-			ref="share" 
-			:contentHeight="580"
-			:shareList="shareList"
-		></share>
 	</view>
 </template>
 
 <script>
-	import share from '@/components/share';
 	import { mapState } from 'vuex';  
 	export default{
-		components: {
-			share
-		},
 		data() {
 			return {
 				imgUrl:this.$imgUrl,
 				specClass: 'none',
 				detail:{},
-				shareList: [],
 				imgList: [],
 				property:[],
 				showProperty:false
@@ -169,24 +158,8 @@
 				this.getdetail(goodsId)
 			}
 			
-			
-			//规格 默认选中第一条
-			this.specList.forEach(item=>{
-				for(let cItem of this.specChildList){
-					if(cItem.pid === item.id){
-						this.$set(cItem, 'selected', true);
-						this.specSelected.push(cItem);
-						break; //forEach不能使用break
-					}
-				}
-			})
-			this.shareList = await this.$api.json('shareList');
 		},
 		onShareAppMessage(options) {
-			if (res.from === 'button') {// 来自页面内分享按钮
-			  console.log(res.target)
-			}
-			console.log(options)
 			return {
 			  title: '自定义分享标题',
 			  path: '/pages/product/product?goodsId=' + options.goodsId
@@ -270,10 +243,6 @@
 			//选择规格
 			selectSpec(item, childItem){
 				this.$set(item, 'propertyValue', childItem);
-			},
-			//分享
-			share(){
-				this.$refs.share.toggleMask();	
 			},
 			buy(){
 				if (this.propertyV()) {

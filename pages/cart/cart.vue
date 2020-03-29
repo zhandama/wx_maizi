@@ -195,11 +195,11 @@
 					content: '清空购物车？',
 					success: (e)=>{
 						if(e.confirm){
-							let goodsIdList = []
+							let cartIdList = []
 							this.cartList.map(x=>{
-								goodsIdList.push(x.goodsId)
+								cartIdList.push(x.cartId)
 							})
-							this.deletedgoods(goodsIdList)
+							this.deletedgoods(cartIdList)
 							this.cartList = [];
 						}
 					}
@@ -229,13 +229,27 @@
 				let list = this.cartList;
 				let orderList = []
 				list.forEach(item=>{
+					let property = []
+					if (item.propertyInfo) {
+						let pro = item.propertyInfo.split(';')
+						if (pro.length>0) {
+						property = pro.map((x,x_index)=>{
+								let obj = {
+									fieldName: item.propertyNameValueInfo.split(';')[x_index],
+									name: x.split(':')[0],
+									propertyValue: x.split(':')[1]
+								}
+								return obj
+							})
+						}
+					}
 					let order = {
 					    count: item.count,
 					    goodsId: item.goodsId,
 						title:item.title,
 					    initPrice: item.initPrice,
 						goodsAttr:item.goodsAttr,
-						property:item.property,
+						property:property,
 						propertyNameValueInfo:item.propertyNameValueInfo
 					}
 					orderList.push(order)

@@ -18,6 +18,12 @@
 		onLoad(options) {
 			this.getDetail(options.id);
 		},
+		onShareAppMessage(options) {
+			return {
+			  title: '',
+			  path: '/pages/about/case?id=' + options.id
+			}
+		},
 		methods: {
 			getDetail(id) {
 				let params = {
@@ -29,6 +35,9 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						this.detail = res.data.result
+						uni.setNavigationBarTitle({
+							title:this.detail.title
+						})
 					}
 				})
 			}

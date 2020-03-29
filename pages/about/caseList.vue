@@ -5,7 +5,9 @@
 				<view class="img-wrapper">
 					<image class="pic" :src="imgUrl+item.titleAttr"></image>
 				</view>
-				<text class="title">{{item.title}}</text>
+				<view class="title">
+					<view class="title1">{{item.title}}</view>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -72,12 +74,21 @@
 	.title{
 		float:left;
 		width: 40%;
-		font-size: 26upx;
-		text-align: center;
-		padding:85upx 30upx;
+		padding:80upx 30upx;
 		background: #d4d4d4;
 		height: 240upx;
 		color:#1f1f1f;
+	}
+	.title1{
+		font-size: 26upx;
+		text-align: center;
+		text-overflow: -o-ellipsis-lastline;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
 	}
 
 </style>

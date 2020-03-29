@@ -2,8 +2,8 @@
 	<view class="container">
 		<!-- 头部轮播 -->
 		<view class="topmain clearfix">
-			<view class="topnav" @click="navTo('/pages/about/caseList')">公司<br>文化</view>
-			<view class="topnav" @click="navTo('/pages/about/caseList')">旗下<br>品牌</view>
+			<view class="topnav" @click="navTo('/pages/about/news?newsType=5')">公司<br>文化</view>
+			<view class="topnav" @click="navToList()">旗下<br>品牌</view>
 			<!-- <view class="topnav">全国<br>门店</view> -->
 			<view class="topnav" @click="navTo('/pages/about/caseList')">设计<br>案例</view>
 			<view class="topnav" @click="navTo('/pages/about/artsList')">视觉<br>形象</view>
@@ -77,7 +77,6 @@
 				swiperCurrent: 0,
 				swiperLength: 0,
 				carouselList: [],
-				goodsList: [],
 				hotList:[],
 				flist:[]
 			};
@@ -85,6 +84,12 @@
 		
 		onLoad() {
 			this.loadData();
+		},
+		onShareAppMessage() {
+			return {
+			  title: '麦兹家具整装中心',
+			  path: '/pages/index/index'
+			}
 		},
 		methods: {
 			/**
@@ -94,8 +99,6 @@
 			async loadData() {
 				this.getbanner()
 				this.gethotList()
-				let goodsList = await this.$api.json('goodsList');
-				this.goodsList = goodsList || [];
 				
 				let params = {
 					url:this.$url + 'category/selectAllEnableCatory',
@@ -110,11 +113,6 @@
 					  })
 				  }
 				}
-			},
-			navToNews(type) {
-				uni.navigateTo({
-					url: '/pages/about/caseList'
-				})
 			},
 			getbanner() {
 				let params = {

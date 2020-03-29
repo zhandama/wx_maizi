@@ -5,7 +5,7 @@
 			"path": "pages/index/index",
 			"style": {
 				// #ifdef MP 
-				"navigationBarTitleText": "麦兹小程序"
+				"navigationBarTitleText": "麦兹家具整装中心"
 				//"navigationStyle": "custom",
 				// #endif 
 			}
@@ -24,13 +24,6 @@
 			"path": "pages/set/set",
 			"style": {
 				"navigationBarTitleText": "设置"
-			}
-		},
-
-		{
-			"path": "pages/userinfo/userinfo",
-			"style": {
-				"navigationBarTitleText": "修改资料"
 			}
 		}, {
 			"path": "pages/cart/cart",
@@ -89,22 +82,17 @@
 				}
 			}
 		}, {
-			"path": "pages/detail/detail",
-			"style": {
-				"navigationBarTitleText": "",
-				"app-plus": {
-					"titleNView": {
-						"type": "transparent"
-					}
-				}
-			}
-		}, {
 			"path": "pages/order/order",
 			"style": {
 				"navigationBarTitleText": "我的订单",
 				"app-plus": {
 					"bounce": "none"
 				}
+			}
+		}, {
+			"path": "pages/order/orderInfo",
+			"style": {
+				"navigationBarTitleText": "订单详情"
 			}
 		}, {
 			"path": "pages/money/money",
@@ -145,10 +133,21 @@
 			"style": {
 				"navigationBarTitleText": "设计案例"
 			}
+		}, {
+			"path": "pages/about/artsList",
+			"style": {
+				"navigationBarTitleText": "视觉形象"
+			}
 		},{
 			"path": "pages/about/caseDetail",
 			"style": {
 				"navigationBarTitleText": "设计案例"
+			}
+		},
+		{
+			"path": "pages/about/news",
+			"style": {
+				"navigationBarTitleText": "公司文化"
 			}
 		},
 		{

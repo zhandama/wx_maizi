@@ -46,21 +46,21 @@
 					<text class="yticon icon-daifukuan"></text>
 					<text>待付款</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover"  :hover-stay-time="50">
+				<view class="order-item" @click="navTo('/pages/order/order?state=3')" hover-class="common-hover"  :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>待收货</text>
 				</view>
 				<view class="order-item" @click="navTo('/pages/order/order?state=4')" hover-class="common-hover"  :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
-					<text>退款/售后</text>
+					<text>已完结</text>
 				</view>
 			</view>
 			<!-- 浏览历史 -->
 			<view class="history-section icon">
-				<list-cell icon="icon-xingxing" iconColor="#e07472" title="普通用户" :nomore="tipsnomore" :tips="tips" @eventClick="navToUserLeave()"></list-cell>
+				<list-cell icon="icon-xingxing" iconColor="#e07472" :title="stateUser" :nomore="tipsnomore" :tips="tips" @eventClick="navToUserLeave()"></list-cell>
 				<!-- <list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell> -->
 				<list-cell icon="icon-tuijian" iconColor="#9789f7" title="邀请好友拿积分" :nomore="false" :tips="'我的邀请码：'+basicInfo.popuCode"></list-cell>
-				<list-cell icon="icon-tuandui" iconColor="#ee883b" v-if="parentPopuCode" title="绑定邀请关系" @eventClick="navTo('/pages/user/popuCode')"></list-cell>
+				<list-cell icon="icon-tuandui" iconColor="#ee883b" title="绑定邀请关系"  :nomore="!basicInfo.parentPopuCode" :tips="'邀请者：'+basicInfo.parentPopuCode"  @eventClick="navToPopuCode()"></list-cell>
 				<!-- <list-cell icon="icon-pinglun-copy" iconColor="#ee883b" title="晒单" tips="晒单抢红包"></list-cell> -->
 				<!-- <list-cell icon="icon-shoucang_xuanzhongzhuangtai" iconColor="#54b4ef" title="我的收藏"></list-cell> -->
 				<!-- <list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" border="" @eventClick="navTo('/pages/set/set')"></list-cell> -->
@@ -84,8 +84,8 @@
 				coverTransition: '0s',
 				moving: false,
 				basicInfo:'',
-				parentPopuCode:false,
-				tips:'申请成为设计师或者业务员',
+				tips:'',
+				stateUser:'普通用户',
 				tipsnomore:false,
 			}
 		},
@@ -127,6 +127,14 @@
 			 * 统一跳转接口,拦截未登录路由
 			 * navigator标签现在默认没有转场动画，所以用view
 			 */
+			navToPopuCode() {
+				if (this.basicInfo.parentPopuCode) {
+					return
+				}
+				uni.navigateTo({
+					url:'/pages/user/popuCode'
+				})  
+			},
 			navTo(url){
 				if(!this.hasLogin){
 					url = '/pages/public/login';
@@ -149,8 +157,12 @@
 				this.$http(params).then(res=>{
 					if (res.data.result) {
 						this.basicInfo = res.data.result
-						if (!this.basicInfo.parentPopuCode) {
-							this.parentPopuCode = true
+						if (this.basicInfo.userType==2) {
+							this.stateUser="业务员"
+						} else if (this.basicInfo.userType==3){
+							this.stateUser="设计师"
+						} else {
+							this.tips = '申请成为设计师或者业务员'
 						}
 						if (this.basicInfo.state==2||this.basicInfo.state==3) {
 							this.tips = '申请资料审核中...'
