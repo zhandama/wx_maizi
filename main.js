@@ -45,7 +45,7 @@ Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
 Vue.prototype.$api = {msg, prePage};
 Vue.prototype.$http = Http;
-Vue.prototype.$imgUrl = 'https://www.metsco.net/backend/'
+Vue.prototype.$imgUrl = 'https://www.metsco.net/images/'
 Vue.prototype.$url = 'https://www.metsco.net/wx-restapi/api/'
 
 App.mpType = 'app'

@@ -148,15 +148,6 @@
 					}
 				})
 			},
-			wxGetUserInfo() {
-				console.log(111)
-				uni.getUserInfo({
-				  provider: 'weixin',
-				  success: function (infoRes) {
-					console.log('用户昵称为：',infoRes);
-				  }
-				});
-			},
 			swiperChange(e) {
 				const index = e.detail.current;
 				this.swiperCurrent = index;

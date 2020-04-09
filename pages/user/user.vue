@@ -174,7 +174,33 @@
 							this.tipsnomore = true
 						}
 						this.login(this.basicInfo)
+					} else {
+						this.getToken()
 					}
+				})
+			},
+			getToken(){
+				let vm = this
+				uni.login({
+				  success (res) {
+				    if (res.code) {
+				      //发起网络请求
+					  uni.request({
+					    url: vm.$url + 'buyerInfo/login',
+					    data: {
+					      code: res.code
+					    },
+						success:function(res){
+							if(res && res.data) {
+								wx.setStorage({key:'headerUserToken',data:res.data.result})
+								vm.getUserInfo()
+							}
+						}
+					  })
+				    } else {
+				      console.log('登录失败！' + res.errMsg)
+				    }
+				  }
 				})
 			},
 			/**
