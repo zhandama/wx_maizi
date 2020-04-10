@@ -63,9 +63,14 @@
 				<text class="cell-tit clamp">商品金额</text>
 				<text class="cell-tip">￥{{totalPrice}}</text>
 			</view>
-			<view class="yt-list-cell b-b" v-if="userInfo.score!=0">
+			<!-- <view class="yt-list-cell b-b" v-if="userInfo.score!=0">
 				<text class="cell-tit clamp">积分抵现</text>
 				<text class="cell-tip red">-￥{{userInfo.score}}</text>
+			</view> -->
+			<view class="yt-list-cell b-b" @click="scoreChecked=!scoreChecked" v-if="score>0">
+				<text class="cell-tit clamp">积分抵现</text>
+				<text class="cell-tip red">-￥{{score}}</text>
+				<view class="yticon icon-xuanzhong2 scorecheckbox" :class="{'checked':!scoreChecked}" ></view>
 			</view>
 			<!-- <view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
@@ -82,7 +87,9 @@
 			<view class="price-content">
 				<text>实付款</text>
 				<text class="price-tip">￥</text>
-				<text class="price">{{totalPrice}}</text>
+				<text class="price" v-if="!scoreChecked">{{totalPrice}}</text>
+				<text class="price" v-if="scoreChecked">{{totalPrice-score}}</text>
+				
 			</view>
 			<text class="submit" @click="submit">提交订单</text>
 		</view>
@@ -125,6 +132,8 @@
 				shoppingCart:false,
 				orderList:[],
 				totalPrice:0,
+				score:0,
+				scoreChecked:true,
 				couponList: [
 					{
 						title: '新用户专享优惠券',
@@ -155,6 +164,13 @@
 				uni.navigateTo({
 					url: `/pages/public/login`
 				})
+			} else {
+				// this.score = 100
+				if (this.userInfo.score>0 && this.userInfo.score<this.totalPrice) {
+					this.score = this.userInfo.score
+				} else if(this.userInfo.score>0&& this.userInfo.score>this.totalPrice) {
+					this.score = this.totalPrice
+				}
 			}
 			if (option.shoppingCart) {
 				this.shoppingCart = option.shoppingCart
@@ -191,6 +207,9 @@
 					}
 			  })
 			},
+			check() {
+				this.score != this.score
+			},
 			numberChange(data) {
 				this.number = data.number;
 			},
@@ -222,6 +241,7 @@
 				let list = [] 
 				let params = {
 					data:{
+						score:this.score,
 						addOrderAddressRequest:this.addressData,
 						addSubOrderRequestList:data,
 						shoppingCart:this.shoppingCart
@@ -689,4 +709,6 @@
 		}
 	}
 	.attr-property{padding-right:15upx}
+	.scorecheckbox{margin:0 15upx;font-size: 36upx;}
+	.checked{color:#EBEEF5}
 </style>

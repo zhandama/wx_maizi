@@ -234,6 +234,7 @@
 						let pro = item.propertyInfo.split(';')
 						if (pro.length>0) {
 						property = pro.map((x,x_index)=>{
+							console.log(x)
 								let obj = {
 									fieldName: item.propertyNameValueInfo.split(';')[x_index],
 									name: x.split(':')[0],
@@ -252,9 +253,16 @@
 						property:property,
 						propertyNameValueInfo:item.propertyNameValueInfo
 					}
-					orderList.push(order)
+					console.log(item)
+					if (item.checked) {
+						orderList.push(order)
+					}
 				})
 				
+				if (orderList.length==0) {
+					this.$api.msg('请选择商品')
+					return
+				}
 				wx.setStorage({key:'orderList',data:orderList})
 				if(!this.hasLogin){
 					uni.navigateTo({

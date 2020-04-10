@@ -60,7 +60,7 @@
 				<list-cell icon="icon-xingxing" iconColor="#e07472" :title="stateUser" :nomore="tipsnomore" :tips="tips" @eventClick="navToUserLeave()"></list-cell>
 				<!-- <list-cell icon="icon-dizhi" iconColor="#5fcda2" title="地址管理" @eventClick="navTo('/pages/address/address')"></list-cell> -->
 				<list-cell icon="icon-tuijian" iconColor="#9789f7" title="邀请好友拿积分" :nomore="false" :tips="'我的邀请码：'+basicInfo.popuCode"></list-cell>
-				<list-cell icon="icon-tuandui" iconColor="#ee883b" title="绑定邀请关系"  :nomore="!basicInfo.parentPopuCode" :tips="'邀请者：'+basicInfo.parentPopuCode"  @eventClick="navToPopuCode()"></list-cell>
+				<list-cell icon="icon-tuandui" iconColor="#ee883b" title="绑定邀请关系"  :nomore="!basicInfo.parentPopuCode" :tips="'邀请者：'+(basicInfo.parentPopuCode?basicInfo.parentPopuCode:'')"  @eventClick="navToPopuCode()"></list-cell>
 				<!-- <list-cell icon="icon-pinglun-copy" iconColor="#ee883b" title="晒单" tips="晒单抢红包"></list-cell> -->
 				<!-- <list-cell icon="icon-shoucang_xuanzhongzhuangtai" iconColor="#54b4ef" title="我的收藏"></list-cell> -->
 				<!-- <list-cell icon="icon-shezhi1" iconColor="#e07472" title="设置" border="" @eventClick="navTo('/pages/set/set')"></list-cell> -->
@@ -173,7 +173,9 @@
 							}
 							this.tipsnomore = true
 						}
-						this.login(this.basicInfo)
+						if (this.basicInfo.nickName) {
+							this.login(this.basicInfo)
+						}
 					} else {
 						this.getToken()
 					}
