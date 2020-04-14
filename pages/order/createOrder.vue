@@ -164,13 +164,6 @@
 				uni.navigateTo({
 					url: `/pages/public/login`
 				})
-			} else {
-				// this.score = 100
-				if (this.userInfo.score>0 && this.userInfo.score<this.totalPrice) {
-					this.score = this.userInfo.score
-				} else if(this.userInfo.score>0&& this.userInfo.score>this.totalPrice) {
-					this.score = this.totalPrice
-				}
 			}
 			if (option.shoppingCart) {
 				this.shoppingCart = option.shoppingCart
@@ -180,6 +173,11 @@
 				this.orderList.map(x=>{
 					this.totalPrice += x.initPrice*x.count
 				})
+			}
+			if (this.userInfo.score>0 && this.userInfo.score<this.totalPrice) {
+				this.score = this.userInfo.score
+			} else if(this.userInfo.score>0&& this.userInfo.score>this.totalPrice) {
+				this.score = this.totalPrice
 			}
 		},
 		computed: {
@@ -262,29 +260,34 @@
 						this.$http(sParams).then(data=>{
 							console.log(data.data.result)
 							let payData = ''
-							if(data.data.result) {
+							if(data.data.result!= 0) {
 								payData = JSON.parse(data.data.result)
+								wx.requestPayment({
+								  timeStamp: payData.timeStamp,
+								  nonceStr: payData.nonceStr,
+								  package: payData.packages,
+								  signType: payData.signType,
+								  paySign: payData.paySign,
+								  success (res) { 
+									  uni.navigateTo({
+									  	url: `/pages/order/order?state=0`
+									  })
+									  vm.paying = false
+								  },
+								  fail (res) { 
+									  this.$api.msg('支付失败')
+									  uni.navigateTo({
+									  	url: `/pages/order/order?state=1`
+									  })
+									  vm.paying = false
+								  }
+								})
+							} else {
+								this.$api.msg('支付成功')
+								uni.navigateTo({
+									url: `/pages/order/order?state=1`
+								})
 							}
-							wx.requestPayment({
-							  timeStamp: payData.timeStamp,
-							  nonceStr: payData.nonceStr,
-							  package: payData.packages,
-							  signType: payData.signType,
-							  paySign: payData.paySign,
-							  success (res) { 
-								  uni.navigateTo({
-								  	url: `/pages/order/order?state=0`
-								  })
-								  vm.paying = false
-							  },
-							  fail (res) { 
-								  this.$api.msg('支付失败')
-								  uni.navigateTo({
-								  	url: `/pages/order/order?state=1`
-								  })
-								  vm.paying = false
-							  }
-							})
 						})
 					} else {
 						vm.$api.msg(res.data.message)

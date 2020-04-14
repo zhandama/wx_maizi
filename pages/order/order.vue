@@ -202,25 +202,32 @@
 				this.$http(sParams).then(data=>{
 					console.log(data.data.result)
 					let payData = ''
-					if(data.data.result) {
+					if(data.data.result != 0) {
 						payData = JSON.parse(data.data.result)
+						wx.requestPayment({
+						  timeStamp: payData.timeStamp,
+						  nonceStr: payData.nonceStr,
+						  package: payData.packages,
+						  signType: payData.signType,
+						  paySign: payData.paySign,
+						  success (res) { 
+							  uni.navigateTo({
+							  	url: `/pages/order/order`
+							  })
+							  vm.paying = false
+						  },
+						  fail (res) { 
+							  vm.paying = false
+						  }
+						})
+					} else {
+						this.$api.msg('支付成功')
+						uni.navigateTo({
+							url: `/pages/order/order`
+						})
+						vm.paying = false
 					}
-					wx.requestPayment({
-					  timeStamp: payData.timeStamp,
-					  nonceStr: payData.nonceStr,
-					  package: payData.packages,
-					  signType: payData.signType,
-					  paySign: payData.paySign,
-					  success (res) { 
-						  uni.navigateTo({
-						  	url: `/pages/order/order`
-						  })
-						  vm.paying = false
-					  },
-					  fail (res) { 
-						  vm.paying = false
-					  }
-					})
+					
 				})
 			},
 			send(orderId){
