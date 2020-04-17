@@ -302,14 +302,17 @@
 					case 3:
 						stateTip = '待收货'; break;
 					case 4:
-						stateTip = '已收货'; break;
+						stateTip = '已收货';
+						stateTipColor = '#333';
+						break;
 					case 5:
-						stateTip = '已完成'; 
-						stateTipColor = '#909399';
+						stateTip = '已收货'; //已完成
+						stateTipColor = '#333';
 						break;
 					case 6:
-						stateTip = '已取消'; break;
-						stateTipColor = '#909399';
+						stateTip = '已取消';
+						stateTipColor = '#ccc';
+						break;
 					//更多自定义
 				}
 				return {stateTip, stateTipColor};
