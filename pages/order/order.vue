@@ -241,7 +241,9 @@
 				this.$http(params).then(res=>{
 					if(res.data.result) {
 						this.$api.msg(`确认收货成功`);
-						console.log(location.href)
+						uni.redirectTo({
+							url: `/pages/order/order?state=4`
+						})
 					} else {
 						this.$api.msg(res.data.message)
 					}
