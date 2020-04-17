@@ -174,7 +174,7 @@
 					this.totalPrice += x.initPrice*x.count
 				})
 			}
-			if (this.userInfo.score>0 && this.userInfo.score<this.totalPrice) {
+			if (this.userInfo.score>0 && this.userInfo.score<=this.totalPrice) {
 				this.score = this.userInfo.score
 			} else if(this.userInfo.score>0&& this.userInfo.score>this.totalPrice) {
 				this.score = this.totalPrice
@@ -239,7 +239,7 @@
 				let list = [] 
 				let params = {
 					data:{
-						score:this.score,
+						score:this.scoreChecked?this.score:0,
 						addOrderAddressRequest:this.addressData,
 						addSubOrderRequestList:data,
 						shoppingCart:this.shoppingCart
@@ -275,18 +275,20 @@
 									  vm.paying = false
 								  },
 								  fail (res) { 
-									  this.$api.msg('支付失败')
-									  uni.navigateTo({
-									  	url: `/pages/order/order?state=1`
-									  })
+									  vm.$api.msg('支付失败')
+									  // uni.navigateTo({
+									  // 	url: `/pages/order/order?state=1`
+									  // })
 									  vm.paying = false
 								  }
 								})
 							} else {
 								this.$api.msg('支付成功')
-								uni.navigateTo({
-									url: `/pages/order/order?state=1`
-								})
+								setTimeout(()=>{
+									uni.redirectTo({
+										url: `/pages/order/order?state=0`
+									})
+								},2000)
 							}
 						})
 					} else {

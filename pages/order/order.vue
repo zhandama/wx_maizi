@@ -211,8 +211,8 @@
 						  signType: payData.signType,
 						  paySign: payData.paySign,
 						  success (res) { 
-							  uni.navigateTo({
-							  	url: `/pages/order/order`
+							  uni.redirectTo({
+							  	url: `/pages/order/order?state=0`
 							  })
 							  vm.paying = false
 						  },
@@ -222,9 +222,11 @@
 						})
 					} else {
 						this.$api.msg('支付成功')
-						uni.navigateTo({
-							url: `/pages/order/order`
-						})
+						setTimeout(()=>{
+							uni.redirectTo({
+								url: `/pages/order/order?state=0`
+							})
+						},2000)
 						vm.paying = false
 					}
 					
