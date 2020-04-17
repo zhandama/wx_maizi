@@ -111,7 +111,7 @@
 						orderList: []
 					},
 					{
-						state: 5,
+						state: 4,
 						text: '已完结',
 						pageNum:1,
 						loadingType: 'more',
