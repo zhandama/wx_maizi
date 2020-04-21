@@ -107,9 +107,15 @@
 				let res = await this.$http(params)
 				if (res.data.result) {
 				  this.flist = res.data.result
+				  this.flist.sort((a, b) => {
+					  return (a.sort + '') > (b.sort + '')? 1 : -1;
+				  })
+				  console.log(this.flist)
 				  if(this.flist.length>0) {
 					  this.flist.map(x=>{
-						  x.imgUrl = x.imageUrl.split(";")
+						  if (x.imageUrl){
+							x.imgUrl = x.imageUrl.split(";")
+						  }
 					  })
 				  }
 				}

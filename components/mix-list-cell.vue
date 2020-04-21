@@ -1,7 +1,6 @@
 <template>
-	<view class="content">
-		
-		<view class="mix-list-cell" :class="border" @click="eventClick" hover-class="cell-hover"  :hover-stay-time="50">
+	<view class="content">		
+		<view v-if="!share" class="mix-list-cell" :class="border" @click="eventClick" hover-class="cell-hover"  :hover-stay-time="50">
 			<text
 				v-if="icon"
 				class="cell-icon yticon"
@@ -16,7 +15,21 @@
 				:class="typeList[navigateType]"
 			></text>
 		</view>
-
+		<button v-if="share" open-type="share" class="mix-list-cell buttonS" @click="eventClick" hover-class="cell-hover"  :hover-stay-time="50">
+			<text
+				v-if="icon"
+				class="cell-icon yticon"
+				:style="[{
+					color: iconColor,
+				}]"
+				:class="icon"
+			></text>
+			<text class="cell-tit clamp">{{title}}</text>
+			<text v-if="tips" class="cell-tip">{{tips}}</text>
+			<text v-if="nomore" class="cell-more yticon"
+				:class="typeList[navigateType]"
+			></text>
+		</button>
 	</view>
 </template>
  
@@ -53,6 +66,10 @@
 				type: String,
 				default: 'right'
 			},
+			share: {
+				type: Boolean,
+				default: false
+			},
 			border: {
 				type: String,
 				default: 'b-b'
@@ -79,7 +96,15 @@
 </script>
 
 <style lang='scss'>
-
+	.content{
+		height:100upx;
+	}
+	.buttonS{
+		text-align: left;background: #fff;border:none;outline:none;height:100upx;
+	}
+	.buttonS::after{
+		position: absolute;transform: scaleY(.5);border-left:0;border-right:0;border-top:0;border-bottom: 1px solid #E4E7ED;left: 30upx;border-radius: 0;content: '';
+	}
 	.icon .mix-list-cell.b-b:after{
 		left: 90upx;
 	}
