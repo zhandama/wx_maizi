@@ -162,7 +162,7 @@
 						} else if (this.basicInfo.userType==3){
 							this.stateUser="设计师"
 						} else {
-							this.tips = '申请成为设计师或者业务员'
+							this.tips = '设计师入驻'
 						}
 						if (this.basicInfo.state==2||this.basicInfo.state==3) {
 							this.tips = '申请资料审核中...'
