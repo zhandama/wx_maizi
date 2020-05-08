@@ -34,7 +34,10 @@
 						console.log(res.data.result)
 						this.$api.msg(`绑定成功`)
 						setTimeout(()=>{
-							uni.navigateBack()
+							// uni.navigateBack()
+							uni.switchTab({
+								url: `/pages/user/user`
+							})
 						}, 800)
 					} else {
 						this.$api.msg(res.data.message)

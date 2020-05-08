@@ -100,14 +100,17 @@
 				  provider: 'weixin',
 				  success: function (infoRes) {
 					  vm.saveInfo(infoRes.userInfo)
-					  vm.login(infoRes.userInfo);
+					  infoRes.userInfo.isLoginPage = true
+					  // vm.login(infoRes.userInfo);
 					  let params = {
 					  	url:vm.$url + 'buyerInfo/queryBasicInfo'
 					  }
 					  vm.$http(params).then(res=>{
 					  	if (res.data.result) {
 					  		vm.login(res.data.result)
-							uni.navigateBack();
+							if (res.data.result.parentPopuCode) {
+								uni.navigateBack();
+							}
 					  	}
 					  })
 					    
