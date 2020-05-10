@@ -53,6 +53,7 @@
 						</view>
 						<view class="action-box b-t" v-if="item.state != 9">
 							<!-- <button class="action-btn" @click="cancelOrder(item)">取消订单</button> -->
+							<!-- <button class="action-btn" @click.stop="callService()">联系客服</button> -->
 							<button class="action-btn recom"  v-if="item.state == 1" @click.stop="payOrder(item.orderId)">立即支付</button>
 							<button class="action-btn send"  v-if="item.state == 3" @click.stop="send(item.orderId)">确认收货</button>
 						</view>
@@ -322,6 +323,11 @@
 				wx.setStorage({key:'orderInfo',data:item})
 				uni.navigateTo({
 					url: `/pages/order/orderInfo?id=${item.id}`
+				})
+			},
+			callService(){
+				wx.makePhoneCall({
+					phoneNumber: '15067444513',
 				})
 			}
 		},

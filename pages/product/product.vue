@@ -208,6 +208,7 @@
 					this.toggleType = 'addcart'
 					return
 				}
+				this.notUserSelect()
 				if (!this.detail.skuId) {
 					this.$api.msg(`该系列暂未定价，请联系商家处理`);
 					return
@@ -239,6 +240,12 @@
 					})
 				}
 				return ok
+			},
+			notUserSelect(){
+				if (this.detail.goodsPropertySkuList.length==1 && !this.propertyV()) {
+					this.detail.skuId = this.detail.goodsPropertySkuList[0].skuId
+					console.log(this.detail.skuId)
+				}
 			},
 			//规格弹窗开关
 			toggleSpec() {
@@ -285,6 +292,7 @@
 					this.toggleType = 'buy'
 					return
 				}
+				this.notUserSelect()
 				if (!this.detail.skuId) {
 					this.$api.msg(`该系列暂未定价，请联系商家处理`);
 					return
