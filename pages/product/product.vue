@@ -18,7 +18,7 @@
 			<text class="title">{{detail.title}}</text>
 			<view class="price-box">
 				<text class="price-tip">¥</text>
-				<text class="price">{{detail.initPrice}} </text>
+				<text class="price">{{detail.skuPrice||detail.initPrice}} </text>
 				<!-- <text class="m-price">¥{{detail.initPrice}}</text> -->
 				<text>元/件</text>
 			</view>
@@ -47,7 +47,7 @@
 			<view class="c-row b-b" @click="toggleSpec" v-if="showProperty">
 				<text class="tit">选择规格</text>
 				<view class="con">
-					<text class="selected-text" v-for="(sItem, sIndex) in property" :key="sIndex">
+					<text class="selected-text" v-for="(sItem, sIndex) in property" :key="sIndex" v-if="sItem.userSelect">
 						{{sItem.propertyValue}}
 					</text>
 				</view>
@@ -108,17 +108,17 @@
 				<view class="a-t">
 					<image  v-if="detail && detail.goodsAttr" :src="imgUrl + detail.goodsAttr"></image>
 					<view class="right">
-						<text class="price">¥{{detail.initPrice}} </text>
+						<text class="price">¥{{detail.skuPrice||detail.initPrice}} </text>
 						<!-- <text class="stock">库存：188件</text> -->
 						<view class="selected">
 							已选：
-							<text class="selected-text" v-for="(sItem, sIndex) in property" :key="sIndex">
+							<text class="selected-text" v-for="(sItem, sIndex) in property" :key="sIndex" v-if="sItem.userSelect">
 								{{sItem.propertyValue}}
 							</text>
 						</view>
 					</view>
 				</view>
-				<view v-for="(item,index) in property" :key="index" class="attr-list">
+				<view v-for="(item,index) in property" :key="index" class="attr-list" v-if="item.userSelect">
 					<text>{{item.name}}</text>
 					<view class="item-list">
 						<text 
@@ -147,7 +147,8 @@
 				detail:{},
 				imgList: [],
 				property:[],
-				showProperty:false
+				showProperty:false,
+				toggleType:''
 			};
 		},
 		async onLoad(options){
@@ -180,17 +181,21 @@
 					if (res.data.result) {
 						this.detail = res.data.result
 						this.detail.goodsPropertyList.map(x=>{
+							var obj = {
+								id:x.id,
+								name:x.name,
+								fieldName:x.fieldName,
+								propertyValue:'',
+								propertyChild:x.propertyValue.split(';'),
+							}
 							if (x.userSelect) {
 								this.showProperty = true
-								this.property.push({
-									id:x.id,
-									name:x.name,
-									fieldName:x.fieldName,
-									propertyValue:'',
-									propertyChild:x.propertyValue.split(';'),
-									userSelect:true
-								})
+								obj.userSelect=true
+							} else {
+								obj.propertyValue = x.propertyValue
+								obj.userSelect = false
 							}
+							this.property.push(obj)
 						})
 						this.imgList = this.detail.goodsImg.split(';')
 					}
@@ -200,12 +205,18 @@
 				if (this.propertyV()) {
 					this.$api.msg(`请选择规格`);
 					this.specClass = 'show'
+					this.toggleType = 'addcart'
+					return
+				}
+				if (!this.detail.skuId) {
+					this.$api.msg(`该系列暂未定价，请联系商家处理`);
 					return
 				}
 				let params = {
 					data:{
 						goodsId:this.detail.goodsId,
-						addGoodsPropertyRequestList:this.property
+						addGoodsPropertyRequestList:this.property,
+						skuIdList:[this.detail.skuId]
 					},
 					url:this.$url + 'shoppingCart/addShoppingCart',
 					type:'post'
@@ -222,7 +233,7 @@
 				let ok = false
 				if(this.property.length>0) {
 					this.property.map(x=>{
-						if(x.propertyValue=='') {
+						if(x.propertyValue==''&&x.userSelect) {
 							ok = true
 						}
 					})
@@ -239,24 +250,53 @@
 				}else if(this.specClass === 'none'){
 					this.specClass = 'show';
 				}
+				if(this.detail.skuId) {
+					if (this.toggleType == 'buy'){
+						this.buy()
+					} else {
+						this.addcart()
+					}
+				}
 			},
 			//选择规格
 			selectSpec(item, childItem){
 				this.$set(item, 'propertyValue', childItem);
+				var list = this.property.map(x=>{
+					var obj = {
+						fieldName:x.fieldName,
+						name:x.name,
+						propertyValue:x.propertyValue,
+					}
+					return obj
+				})
+				var sku =  JSON.stringify(list)
+				this.detail.goodsPropertySkuList.map(n=>{
+					if (n.sku == sku) {
+						this.detail.skuPrice = n.price
+						this.detail.skuId = n.skuId
+						this.$set(this.detail,'skuPrice',n.price)
+					}
+				})
 			},
 			buy(){
 				if (this.propertyV()) {
 					this.$api.msg(`请选择规格`);
 					this.specClass = 'show'
+					this.toggleType = 'buy'
+					return
+				}
+				if (!this.detail.skuId) {
+					this.$api.msg(`该系列暂未定价，请联系商家处理`);
 					return
 				}
 				let order = {
 				    count: 1,
 				    goodsId: this.detail.goodsId,
 					title:this.detail.title,
-				    initPrice: this.detail.initPrice,
+				    initPrice: this.detail.skuPrice||this.detail.initPrice,
 					goodsAttr:this.detail.goodsAttr,
 					property:this.property,
+					skuId:this.detail.skuId
 				}
 				let orderList = []
 				orderList.push(order)
@@ -586,7 +626,7 @@
 			flex-direction: column;
 			font-size: $font-base + 2upx;
 			color: $font-color-base;
-			padding-top: 30upx;
+			padding-top: 10upx;
 			padding-left: 10upx;
 		}
 		.item-list{
@@ -602,8 +642,8 @@
 				margin-bottom: 20upx;
 				border-radius: 100upx;
 				min-width: 60upx;
-				height: 60upx;
-				padding: 0 20upx;
+				/* height: 60upx; */
+				padding: 10upx 20upx;
 				font-size: $font-base;
 				color: $font-color-dark;
 			}

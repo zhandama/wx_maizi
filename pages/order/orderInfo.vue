@@ -25,7 +25,7 @@
 				<image :src="imgUrl+item.goodsAttr"></image>
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
-					<text class="spec"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem.name}}:{{sitem.propertyValue}}</text></text>
+					<view class="spec attr-property" v-html="htmlPer(item.propertyTitle)"></view>
 					<view class="price-box">
 						<text class="price">￥{{item.goodsPrice}}</text>
 						<text class="number">x {{item.count}}</text>
@@ -59,6 +59,10 @@
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">商品金额</text>
 				<text class="cell-tip">￥{{orderInfo.price}}</text>
+			</view>
+			<view class="yt-list-cell b-b" v-if="orderInfo.price!=orderInfo.totalAmount">
+				<text class="cell-tit clamp">实付金额</text>
+				<text class="cell-tip">￥{{orderInfo.totalAmount}}</text>
 			</view>
 			<view class="yt-list-cell b-b" v-if="orderInfo.score!=0">
 				<text class="cell-tit clamp">积分抵现</text>
@@ -185,6 +189,10 @@
 				setTimeout(()=>{
 					this.maskState = state;
 				}, timer)
+			},
+			htmlPer(val){
+				val = val.replace(/;/g,'<br>')
+				return val
 			},
 			send(){
 				let orderId = this.orderInfo.orderId
@@ -372,7 +380,8 @@
 			}
 
 			.spec {
-				font-size: 26upx;
+				display: flex;
+				font-size: 24upx;
 				color: $font-color-light;
 			}
 

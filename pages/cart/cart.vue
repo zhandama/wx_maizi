@@ -32,7 +32,7 @@
 						</view>
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
-							<text class="attr"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem}}</text></text>
+							<text class="attr attr-property"  v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem.name}}:{{sitem.propertyValue}}</text>
 							<text class="price">¥{{item.initPrice}}</text>
 							<uni-number-box 
 								class="step"
@@ -43,6 +43,7 @@
 								:isMin="item.count===1"
 								:index="index"
 								@eventChange="numberChange"
+								style="height:70upx"
 							></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
@@ -131,7 +132,8 @@
 				if (list) {
 					this.cartList = list.map(item=>{
 						item.checked = true;
-						item.property = item.propertyInfo?item.propertyInfo.split(';'):''
+						item.property = item.goodsPropertySkuList&&item.goodsPropertySkuList[0]?JSON.parse(item.goodsPropertySkuList[0].sku):''
+						item.initPrice = item.goodsPropertySkuList&&item.goodsPropertySkuList[0]?item.goodsPropertySkuList[0].price:item.initPrice
 						return item;
 					});
 				}
@@ -229,20 +231,9 @@
 				let list = this.cartList;
 				let orderList = []
 				list.forEach(item=>{
-					let property = []
-					if (item.propertyInfo) {
-						let pro = item.propertyInfo.split(';')
-						if (pro.length>0) {
-						property = pro.map((x,x_index)=>{
-							console.log(x)
-								let obj = {
-									fieldName: item.propertyNameValueInfo.split(';')[x_index],
-									name: x.split(':')[0],
-									propertyValue: x.split(':')[1]
-								}
-								return obj
-							})
-						}
+					let property = {}
+					if (item.goodsPropertySkuList&&item.goodsPropertySkuList[0]) {
+						property = JSON.parse(item.goodsPropertySkuList[0].sku)
 					}
 					let order = {
 					    count: item.count,
@@ -251,10 +242,10 @@
 					    initPrice: item.initPrice,
 						goodsAttr:item.goodsAttr,
 						property:property,
-						propertyNameValueInfo:item.propertyNameValueInfo
+						propertyNameValueInfo:item.propertyNameValueInfo,
+						skuId:item.propertySkuId
 					}
-					console.log(item)
-					if (item.checked) {
+					if (item.checked && item.propertySkuId && item.propertySkuId!='null') {
 						orderList.push(order)
 					}
 				})
@@ -350,11 +341,15 @@
 				height: 40upx;
 				line-height: 40upx;
 			}
+			.price{
+				font-size:$font-base + 4upx;
+				color: #DD524D;
+			}
 			.attr{
-				font-size: $font-sm + 2upx;
+				font-size: $font-sm;
 				color: $font-color-light;
-				height: 50upx;
-				line-height: 50upx;
+				height: auto;
+				line-height: 35upx;
 			}
 			.price{
 				height: 50upx;

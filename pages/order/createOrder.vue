@@ -28,7 +28,7 @@
 				<image :src="imgUrl+item.goodsAttr"></image>
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
-					<text class="spec"><text class="attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem.name}}:{{sitem.propertyValue}}</text></text>
+					<text class="spec attr-property" v-for="(sitem, sindex) in item.property" :key="sindex">{{sitem.name}}: {{sitem.propertyValue}}</text>
 					<view class="price-box">
 						<text class="price">￥{{item.initPrice}}</text>
 						<text class="number">x {{item.count}}</text>
@@ -224,15 +224,16 @@
 				}
 				let data = []
 				this.orderList.map(x=>{
-					let orderPropertyRequestList = []
-					x.property.map(n=>{
-						orderPropertyRequestList.push({fieldName:n.fieldName,propertyValue:n.propertyValue})
-					})
+					// let orderPropertyRequestList = []
+					// x.property.map(n=>{
+					// 	orderPropertyRequestList.push({fieldName:n.fieldName,propertyValue:n.propertyValue})
+					// })
 					let obj = {
 						count:x.count,
 						goodsId:x.goodsId,
 						initPrice:x.initPrice,
-						orderPropertyRequestList
+						skuId:x.skuId
+						// orderPropertyRequestList
 					}
 					data.push(obj)
 				})
@@ -413,7 +414,8 @@
 			}
 
 			.spec {
-				font-size: 26upx;
+				display: flex;
+				font-size: 24upx;
 				color: $font-color-light;
 			}
 

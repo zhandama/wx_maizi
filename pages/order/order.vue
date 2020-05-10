@@ -40,6 +40,7 @@
 							<view class="right">
 								<text class="title clamp">{{goodsItem.title}}</text>
 								<text class="attr-box">{{goodsItem.goodsPrice}}  x {{goodsItem.count}}</text>
+								<text class="attr-box">{{goodsItem.userSelectPropertyTitle}}</text>
 								<text class="price">{{goodsItem.totalAmount}}</text>
 							</view>
 						</view>
