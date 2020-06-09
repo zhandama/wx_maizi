@@ -10,7 +10,7 @@
 				<view @click="navToDetailPage(titem.goodsId)" class="t-item" v-for="titem in goodsList" :key="titem.id">
 					<image :src="imgUrl + titem.goodsAttr"></image>
 					<text class="goods-title">{{titem.title}}</text>
-					<text>￥{{titem.initPrice}}</text>
+					<text class="goods-price">￥{{titem.initPrice}}</text>
 				</view>
 			</view>
 		</scroll-view>
@@ -39,7 +39,6 @@
 				this.currentId = wx.getStorageSync('currentId')
 				this.tabtap({id:this.currentId})
 			}
-			console.log(2)
 		},
 		onLoad(options){
 			if(wx.getStorageSync('currentId')){
@@ -74,7 +73,7 @@
 					wx.setStorage({key:'currentId',data:'isHot'})
 					delete this.params.rootCategoryId
 				} else if(id && id!=='all') {
-					wx.setStorage({key:'currentId',data:''})
+					wx.setStorage({key:'currentId',data:id})
 					this.params.rootCategoryId=id
 					delete this.params.isHot
 				} else {
@@ -216,6 +215,9 @@
 			text-overflow: ellipsis;
 			word-break: break-all;
 			overflow: hidden;
+		}
+		.goods-price{
+			color:#DD524D;
 		}
 		image{
 			width: 240upx;

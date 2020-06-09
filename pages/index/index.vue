@@ -18,7 +18,7 @@
 			<!-- 标题栏和状态栏占位符 -->
 			<view class="titleNview-placing"></view>
 			<swiper class="carousel" circular @change="swiperChange">
-				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navTo('/pages/about/caseList')">
+				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="bannerNavTo(item)">
 					<image :src="imgUrl+item.titleAttr" />
 				</swiper-item>
 			</swiper>
@@ -168,13 +168,26 @@
 				wx.setStorage({key:'currentId',data:id})
 				uni.switchTab({
 					url: `/pages/category/category?id=${id}`
-				})
+				})   
 			},
 			navTo(url){
 				uni.navigateTo({  
 					url
 				})  
 			},
+			bannerNavTo(item){
+				if (item.title.indexOf(':')!=-1) {
+					var ba = item.title.split(':')
+					if (ba[0]=='详情') {
+						uni.navigateTo({
+							url:`/pages/product/product?goodsId=${ba[1]}`
+						}) 
+					}
+					if (ba[0]=='分类') {
+						this.navToList(Number(ba[1]))
+					}
+				}
+			}
 		},
 		// #ifndef MP
 		// 标题栏input搜索框点击

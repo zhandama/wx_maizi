@@ -112,11 +112,6 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
-		}, {
-			"path": "pages/money/pay",
-			"style": {
-				"navigationBarTitleText": "支付"
-			}
 		},
 		{
 			"path": "pages/money/paySuccess",
