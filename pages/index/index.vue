@@ -183,6 +183,11 @@
 							url:`/pages/product/product?goodsId=${ba[1]}`
 						}) 
 					}
+					if (ba[0]=='案例') {
+						uni.navigateTo({
+							url:`/pages/about/caseList`
+						})
+					}
 					if (ba[0]=='分类') {
 						this.navToList(Number(ba[1]))
 					}
