@@ -131,15 +131,33 @@
 						</text>
 					</view>
 				</view>
-				<button class="btn" @click="toggleSpec">完成</button>
+				<view class="attr-list" style="position: relative;">
+					<text>数量</text>
+					<uni-number-box
+						class="step"
+						:min="1" 
+						:max="99"
+						:value="count>99?99:count"
+						:isMax="count>=99?true:false"
+						:isMin="count===1"
+						@eventChange="numberChange"
+						style="height:70upx;float: right;margin-top:10upx"
+					></uni-number-box>
+				</view>
+				
+				<button class="btn" @click="toggleSpec('go')">完成</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import { mapState } from 'vuex';  
+	import { mapState } from 'vuex'; 
+	import uniNumberBox from '@/components/uni-number-box.vue'
 	export default{
+		components: {
+			uniNumberBox
+		},
 		data() {
 			return {
 				imgUrl:this.$imgUrl,
@@ -148,7 +166,8 @@
 				imgList: [],
 				property:[],
 				showProperty:false,
-				toggleType:''
+				toggleType:'',
+				count:1
 			};
 		},
 		async onLoad(options){
@@ -201,6 +220,9 @@
 					}
 				})
 			},
+			numberChange(data){
+				this.count = data.number;
+			},
 			addcart() {
 				if (this.propertyV()) {
 					this.$api.msg(`请选择规格`);
@@ -248,7 +270,15 @@
 				}
 			},
 			//规格弹窗开关
-			toggleSpec() {
+			toggleSpec(qw) {
+				if(this.detail.skuId && qw == 'go') {
+					if (this.toggleType == 'buy'){
+						this.buy()
+					} else {
+						this.addcart()
+					}
+				}
+				
 				if(this.specClass === 'show'){
 					this.specClass = 'hide';
 					setTimeout(() => {
@@ -257,13 +287,7 @@
 				}else if(this.specClass === 'none'){
 					this.specClass = 'show';
 				}
-				if(this.detail.skuId) {
-					if (this.toggleType == 'buy'){
-						this.buy()
-					} else {
-						this.addcart()
-					}
-				}
+				
 			},
 			//选择规格
 			selectSpec(item, childItem){
@@ -298,7 +322,7 @@
 					return
 				}
 				let order = {
-				    count: 1,
+				    count: this.count,
 				    goodsId: this.detail.goodsId,
 					title:this.detail.title,
 				    initPrice: this.detail.skuPrice||this.detail.initPrice,
@@ -307,6 +331,7 @@
 					skuId:this.detail.skuId
 				}
 				let orderList = []
+				console.log(order)
 				orderList.push(order)
 				// for (var i=0;i<3;i++) {
 				// 	orderList.push(order)
